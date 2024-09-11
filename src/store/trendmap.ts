@@ -162,89 +162,113 @@ function trendMapStore() {
 				return 'bg-white';
 			}
 		},
-		handleDragStart(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
-			event.currentTarget.classList.add('animate-bounce');
+		handleTickerDragStart(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+			let ticker = event.currentTarget 
+			ticker.classList.add('animate-bounce');
 			event.dataTransfer!.effectAllowed = 'move';
 			// Group id is needed to prevent reentry on drag
 			event.dataTransfer?.setData(
 				'text',
 				JSON.stringify({
-					ticker: event.currentTarget.id,
+					ticker: ticker.id,
 					// All section groups will have a internal div to contain the tickers
 					// which result in a <section><div> draggable is here </div></section>
-					group: event.currentTarget.parentElement!.parentElement!.id
+					group: ticker.parentElement!.parentElement!.id
 				})
 			);
 		},
-		handleDragEnd(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+		handleTickerDragEnd(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
 			event.currentTarget.classList.remove('animate-bounce');
 		},
-		handleDragOver(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+		handleTickerGroupingDragOver(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
 			event.preventDefault(); // Necessary to allow for drop
 			event.dataTransfer!.dropEffect = 'move';
 		},
-		handleDragEnter(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+		handleTickerGroupingDragEnter(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+			let newPotentialGroup = event.currentTarget
+
 			// Children ele will disrupt drag n drop
-			Array.from(event.currentTarget.children).forEach((child) =>
+			Array.from(newPotentialGroup.children).forEach((child) =>
 				child.classList.add('pointer-events-none')
 			);
 
 			// Prevent child from invoking
 			const data: DraggableTicker = JSON.parse(event.dataTransfer!.getData('text'));
-			if (data.group !== event.currentTarget.id && event.currentTarget.role !== 'group') {
+			if (data.group !== newPotentialGroup.id && newPotentialGroup.role !== 'group') {
 				// Show grouping box
-				event.currentTarget.classList.remove('border-gray-400');
-				event.currentTarget.classList.add('border-gray-800');
-				event.currentTarget.classList.add('bg-gray-500');
-			} else if (data.group !== event.currentTarget.id) {
-				event.currentTarget.classList.add('border-green-500');
+				newPotentialGroup.classList.remove('border-gray-400');
+				newPotentialGroup.classList.add('border-gray-800');
+				newPotentialGroup.classList.add('bg-gray-500');
+			} else if (data.group !== newPotentialGroup.id) {
+				newPotentialGroup.classList.add('border-blue-500');
 			}
 		},
-		handleDragLeave(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+		handleTickerGroupingDragLeave(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+			let newPotentialGroup = event.currentTarget
+
 			// Children ele will disrupt drag n drop
-			Array.from(event.currentTarget.children).forEach((child) =>
+			Array.from(newPotentialGroup.children).forEach((child) =>
 				child.classList.remove('pointer-events-none')
 			);
 
 			// Prevent child from invoking
 			const data: DraggableTicker = JSON.parse(event.dataTransfer!.getData('text'));
-			if (data.group !== event.currentTarget.id && event.currentTarget.role !== 'group') {
+			if (data.group !== newPotentialGroup.id && newPotentialGroup.role !== 'group') {
 				// Remove grouping box
-				event.currentTarget.classList.add('border-gray-400');
-				event.currentTarget.classList.remove('border-gray-800');
-				event.currentTarget.classList.remove('bg-gray-500');
-			} else if (data.group !== event.currentTarget.id) {
-				event.currentTarget.classList.remove('border-green-500');
+				newPotentialGroup.classList.add('border-gray-400');
+				newPotentialGroup.classList.remove('border-gray-800');
+				newPotentialGroup.classList.remove('bg-gray-500');
+			} else if (data.group !== newPotentialGroup.id) {
+				newPotentialGroup.classList.remove('border-blue-500');
 			}
 		},
-		handleDrop(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
+		handleTickerGroupingDrop(event: DragEvent & { currentTarget: EventTarget & HTMLElement }) {
 			event.preventDefault();
 
 			const data: DraggableTicker = JSON.parse(event.dataTransfer!.getData('text'));
+			let newGroup = event.currentTarget
+			let oldGroup = document.getElementById(data.group)!
 			if (data.group !== event.currentTarget.id) {
 				// Children ele will disrupt drag n drop
-				Array.from(event.currentTarget.children).forEach((child) =>
+				Array.from(newGroup.children).forEach((child) =>
 					child.classList.remove('pointer-events-none')
 				);
 
+				// All tickers live in their own potential group which will
+				// always be the first element but upon adding to a potential group it will
+				// not be considered as a group but rather groups are valid when atleast a single element 
+				// is present
+				if (newGroup.firstElementChild!.children.length) {				
+					// Show title name for grouping and will always be last child
+					// since a div and input reside in section for holding tickers (<div>) and naming (<input/>)
+					newGroup.lastElementChild!.classList.remove('hidden');
+					newGroup.lastElementChild!.classList.remove('bg-gray-400');
+					newGroup.lastElementChild!.classList.add('bg-gray-500');
+					
+					// Set group as active to keep wrapping
+					newGroup.role = 'group';
+				} else if (newGroup.role !== "group") {
+					// Remove grouping box
+					newGroup.classList.add('border-gray-400');
+					newGroup.classList.remove('border-gray-800');
+					newGroup.classList.remove('bg-gray-500');
+				}
+
+				newGroup.classList.remove('border-blue-500');
 				// Outside div will be containing group for scrolling
-				event.currentTarget.firstElementChild!.appendChild(document.getElementById(data.ticker)!);
+				newGroup.firstElementChild!.appendChild(document.getElementById(data.ticker)!);
+				
+				if (!oldGroup.firstElementChild!.children.length) {
+					oldGroup.lastElementChild!.classList.add('hidden');
+					// Remove grouping box
+					oldGroup.classList.add('border-gray-400');
+					oldGroup.classList.remove('border-gray-800');
+					oldGroup.classList.remove('bg-gray-500');
 
-				event.currentTarget.classList.remove('border-green-500');
-				// Show title name for grouping and will always be last child
-				// since a div and input reside in section for holding tickers (<div>) and naming (<input/>)
-				event.currentTarget.lastElementChild!.classList.remove('hidden');
-				event.currentTarget.lastElementChild!.classList.remove('bg-gray-400');
-				event.currentTarget.lastElementChild!.classList.add('bg-gray-500');
-
-				// All tickers live in their own potential group but
-				// will be cleanup upon moving
-				document.getElementById(data.group)!.remove();
-
-				// Set group as active to keep wrapping
-				event.currentTarget.role = 'group';
+					oldGroup.role = null
+				}
 			}
-		}
+		},
 	};
 }
 

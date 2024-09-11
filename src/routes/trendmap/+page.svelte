@@ -15,12 +15,12 @@
 		closeDeleteTickerDialog,
 		deleteTicker,
 		toColor,
-		handleDragEnd,
-		handleDragLeave,
-		handleDragOver,
-		handleDragEnter,
-		handleDragStart,
-		handleDrop
+		handleTickerDragEnd,
+		handleTickerDragStart,
+		handleTickerGroupingDragLeave,
+		handleTickerGroupingDragEnter,
+		handleTickerGroupingDragOver,
+		handleTickerGroupingDrop,
 	} = trendMap;
 </script>
 
@@ -81,16 +81,16 @@
 			<!-- svelte-ignore a11y-no-static-element-interactions (redudant role) -->
 			<section
 				class="h-full text-slate-200 p-16 relative rounded-md border border-gray-400 transition-all duration-200 flex flex-col items-center gap-1"
-				on:dragleave={handleDragLeave}
-				on:dragenter={handleDragEnter}
-				on:dragover={handleDragOver}
-				on:drop={handleDrop}
+				on:dragleave={handleTickerGroupingDragLeave}
+				on:dragenter={handleTickerGroupingDragEnter}
+				on:dragover={handleTickerGroupingDragOver}
+				on:drop={handleTickerGroupingDrop}
 				id={generateUID()}
 			>
 				<div class="h-full flex flex-col">
 					<button
-						on:dragstart={handleDragStart}
-						on:dragend={handleDragEnd}
+						on:dragstart={handleTickerDragStart}
+						on:dragend={handleTickerDragEnd}
 						on:contextmenu={showDeleteTickerWarning}
 						draggable="true"
 						id={name}
