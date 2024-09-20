@@ -1,6 +1,26 @@
-use crate::api::trendmap::model::Trend;
 use polars::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::fmt::Display;
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Trend {
+    Up,
+    Down,
+    Range,
+    Unk,
+}
+
+impl Display for Trend {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Trend::Up => "UP",
+            Trend::Range => "RANGE",
+            Trend::Down => "DOWN",
+            Trend::Unk => "UNKNOWN",
+        };
+        write!(f, "{}", s)
+    }
+}
 
 /// Different variation of determining trend direction in markets
 pub trait TrendStrategy {

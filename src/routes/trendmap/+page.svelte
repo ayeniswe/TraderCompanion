@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { generateUID } from '$lib';
-	import { trendMap } from '../../store';
+	import { app, trendMap } from '../../store';
+	import { Theme } from '../../store/app/model';
 
 	const {
 		store,
 		ticker,
 		addTickerDialog,
 		deleteTickerDialog,
+		allowGroupNameChange,
+		disableGroupNameChange,
 		showDeleteTickerWarning,
 		addTicker,
 		setTicker,
@@ -21,10 +24,13 @@
 		handleTickerGroupingDragEnter,
 		handleTickerGroupingDragOver,
 		handleTickerGroupingDrop,
+		validateGroupInput
 	} = trendMap;
+
+	const { theme } = app;
 </script>
 
-<div class="opacity w-screen h-screen">
+<div class="w-screen h-screen">
 	<div
 		class="absolute w-full h-full flex items-end p-3 {$addTickerDialog || $deleteTickerDialog
 			? 'justify-center items-center z-10'
@@ -32,94 +38,102 @@
 	>
 		{#if $addTickerDialog}
 			<div
-				class="bg-gray-800 text-slate-200 w-72 h-14 border rounded-sm border-black font-semibold flex items-center justify-between p-3 gap-3"
+				class="secondary-theme border w-72 h-14 rounded-sm font-semibold flex items-center justify-between p-3 gap-3"
 			>
 				<div class="flex items-center w-full justify-around">
 					<h1>Ticker</h1>
 					<input
 						on:input={setTicker}
 						placeholder="TSLA"
-						class="p-1 rounded-md border text-sm font-normal bg-gray-700 hover:bg-gray-600 transition-all focus:duration-0 focus:bg-gray-700 border-gray-500 w-24"
+						class="p-1 rounded-md border text-sm font-normal transition-all focus:duration-0 w-24"
 					/>
 				</div>
 				<button
 					on:click={addTicker}
-					class="bg-blue-500 rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
+					class="rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
 					>Save</button
 				>
 				<button
 					on:click={closeAddTickerDialog}
-					class="bg-red-500 rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
+					class="bg-red-important rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
 					>Cancel</button
 				>
 			</div>
 		{/if}
 		{#if $deleteTickerDialog}
 			<div
-				class="bg-gray-800 text-slate-200 w-96 h-14 border rounded-sm border-black font-semibold flex items-center justify-between p-3 gap-3"
+				class="secondary-theme border w-96 h-14 rounded-sm font-semibold flex items-center justify-between p-3 gap-3"
 			>
 				<div class="flex items-center w-full justify-around">
 					<p>Delete<span class="text-red-500 pl-1 pr-1">{$ticker}</span>. Are you sure?</p>
 				</div>
 				<button
 					on:click={deleteTicker}
-					class="bg-red-500 rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
+					class="bg-red-important rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
 					>Delete</button
 				>
 				<button
 					on:click={closeDeleteTickerDialog}
-					class="bg-blue-500 rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
+					class="rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
 					>Cancel</button
 				>
 			</div>
 		{/if}
 	</div>
 	<div
-		class="bg-gray-400 w-full h-full absolute border-black border-2 rounded-md p-9 grid max-2xl:grid-cols-8 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
+		class="primary-theme w-full h-full border-8 overflow-y-auto p-9 grid max-2xl:grid-cols-8 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
 	>
-		{#each $store as [name, { mid_term, long_term, short_term }]}
+		{#each $store as [id, { name, tickers }]}
 			<!-- svelte-ignore a11y-no-static-element-interactions (redudant role) -->
 			<section
-				class="h-full text-slate-200 p-16 relative rounded-md border border-gray-400 transition-all duration-200 flex flex-col items-center gap-1"
+				class="h-full group select-none accent-theme p-16 relative rounded-lg transition-all duration-200 flex flex-col items-center gap-1"
 				on:dragleave={handleTickerGroupingDragLeave}
 				on:dragenter={handleTickerGroupingDragEnter}
 				on:dragover={handleTickerGroupingDragOver}
 				on:drop={handleTickerGroupingDrop}
-				id={generateUID()}
+				{id}
 			>
 				<div class="h-full flex flex-col">
-					<button
-						on:dragstart={handleTickerDragStart}
-						on:dragend={handleTickerDragEnd}
-						on:contextmenu={showDeleteTickerWarning}
-						draggable="true"
-						id={name}
-					>
-						<div class="bg-gray-200 w-36 h-8 rounded-md absolute border border-black"></div>
+					{#each tickers as [name, { mid_term, long_term, short_term }]}
 						<div
-							class="bg-gray-800 w-36 h-8 rounded-md relative -top-1 border border-black p-1 flex gap-3"
+							class="cursor-pointer"
+							on:dragstart={handleTickerDragStart}
+							on:dragend={handleTickerDragEnd}
+							on:contextmenu={(e) => showDeleteTickerWarning(id, e)}
+							draggable="true"
+							id={name}
 						>
-							<span class="font-semibold text-sm flex items-center justify-center">{name}</span>
-							<div class="flex gap-1 items-center w-full">
-								<svg class="rounded-full {toColor(long_term)} w-5 h-5 border border-black"></svg>
-								<svg class="rounded-full {toColor(mid_term)} w-4 h-4 border border-black"></svg>
-								<svg class="rounded-full {toColor(short_term)} w-3 h-3 border border-black"></svg>
+							<div class="primary-theme w-36 h-8 rounded-md absolute border border-black"></div>
+							<div
+								class="secondary-theme w-36 h-8 rounded-md relative -top-1 border p-1 flex gap-3 border-black"
+							>
+								<span class="font-semibold text-sm flex items-center justify-center">{name}</span>
+								<div class="flex gap-1 items-center w-full">
+									<svg class="rounded-full {toColor(long_term)} w-5 h-5"></svg>
+									<svg class="rounded-full {toColor(mid_term)} w-4 h-4"></svg>
+									<svg class="rounded-full {toColor(short_term)} w-3 h-3"></svg>
+								</div>
 							</div>
 						</div>
-					</button>
+					{/each}
 				</div>
 				<input
-					class="hidden font-extrabold absolute left-0 top-0 m-4 p-1 w-3/4 bg-gray-400"
-					placeholder="Untitled"
+					on:focusout={disableGroupNameChange}
+					on:dblclick={allowGroupNameChange}
+					on:input={(e) => validateGroupInput(id, e)}
+					class="hidden bg-transparent-important font-extrabold absolute rounded-sm left-0 top-0 m-4 p-1 w-3/4"
+					value={name}
+					placeholder={'Untitled'}
+					readonly
 				/>
 			</section>
 		{/each}
-		{#if !$addTickerDialog}
-			<button
-				on:click={openAddTickerDialog}
-				class="absolute bottom-0 m-3 w-20 h-8 focus:duration-0 rounded-md text-slate-200 bg-blue-500 flex items-center justify-center font-normal p-1 active:scale-90 hover:bg-blue-600 transition-all duration-200"
-				>+ New</button
-			>
-		{/if}
 	</div>
+	{#if !$addTickerDialog}
+		<button
+			on:click={openAddTickerDialog}
+			class="absolute bottom-0 m-6 w-20 h-8 focus:duration-0 rounded-md flex items-center justify-center font-normal p-1 active:scale-90 transition-all duration-200"
+			>+ New</button
+		>
+	{/if}
 </div>

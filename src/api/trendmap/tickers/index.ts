@@ -3,8 +3,6 @@ import type { Event } from '@tauri-apps/api/event';
 import { Method, RPCRequest } from '../../model';
 import { type Ticker } from '../model';
 import { trendMap } from '../../../store';
-import { generateUID } from '$lib';
-
 /**
  * Listen for request(s) to `trendmap/tickers` route
  */
@@ -14,7 +12,10 @@ function listen() {
 			let tickers = event.payload.payload;
 			for (const key in tickers) {
 				const ticker = tickers[key];
-				trendMap.store.set(key, ticker);
+				const groupId = ticker.group_id;
+				const group = trendMap.store.get(groupId)!;
+				group.tickers.set(key, ticker);
+				trendMap.store.set(groupId, group);
 			}
 		}
 	});

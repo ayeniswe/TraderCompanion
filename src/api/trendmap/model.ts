@@ -1,5 +1,11 @@
+interface Group {
+	name: string;
+	tickers: Map<string, Ticker>;
+}
+
 interface Ticker {
 	name: string;
+	group_id: string;
 	long_term: Trend;
 	mid_term: Trend;
 	short_term: Trend;
@@ -13,4 +19,4 @@ enum Trend {
 }
 
 export { Trend };
-export type { Ticker };
+export type { Ticker, Group };

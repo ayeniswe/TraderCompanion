@@ -3,7 +3,10 @@
 	import '../app.css';
 	import Trend from './trendmap/+page.svelte';
 	import { listen } from '../api/trendmap/tickers';
-	import { trendMap } from '../store';
+	import { trendMap, app } from '../store';
+	import { Theme } from '../store/app/model';
+
+	const { theme, ready, setupForm, setupError, loading, setAlpacaCredentials } = app;
 
 	onMount(() => {
 		// Start internal api routes
@@ -19,5 +22,48 @@
 	});
 </script>
 
-<Trend />
+<div class={$theme === Theme.Dark ? 'dark' : 'light'}>
+	{#if $ready}
+		<div
+			class="primary-theme w-screen h-screen border-8 rounded-sm font-semibold flex items-center justify-center"
+		>
+			<form
+				bind:this={$setupForm}
+				class="secondary-theme rounded-lg flex flex-col items-center justify-center w-96 h-80 gap-4"
+			>
+				<img
+					width="100px"
+					src={$theme === Theme.Dark ? 'dark-logo.png' : 'light-logo.png'}
+					alt="robot with arms raised high and title below displaying 'Trader Companion'"
+				/>
+				<fieldset class="flex flex-col w-3/5 gap-3">
+					<input
+						name="alpaca-key"
+						placeholder="Alpaca API Key"
+						class="p-1 w-full {$setupError ? "border-red-important" : ""} rounded-md border text-sm font-normal transition-all focus:duration-0"
+					/>
+					<input
+						name="alpaca-secret"
+						placeholder="Alpaca Secret Key"
+						class="p-1 w-full {$setupError ? "border-red-important" : ""} rounded-md border text-sm font-normal transition-all focus:duration-0"
+					/>
+					{#if $setupError}
+					<p class="text-xs text-red-600">API credentials are incorrect</p>
+					{/if}
+				</fieldset>
+				{#if !$loading}
+				<button
+				on:click={setAlpacaCredentials}
+				class="rounded-sm flex focus:duration-0 items-center justify-center font-normal p-1 w-16 h-6 active:scale-90 text-sm hover:opacity-90 transition-all duration-200"
+				>Enter</button
+				>
+				{:else}
+				<div class="animate-spin w-6 h-6 border-t-4 rounded-full border-blue-500"></div>
+				{/if}
+			</form>
+		</div>
+	{:else}
+		<Trend />
+	{/if}
+</div>
 <!-- <slot /> -->

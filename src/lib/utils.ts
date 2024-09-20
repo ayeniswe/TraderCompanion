@@ -30,13 +30,6 @@ function createMapStore<K, V>() {
 			})();
 			return value;
 		},
-		all() {
-			let value: Map<K, V> | undefined;
-			subscribe((map) => {
-				value = map;
-			})();
-			return value;
-		},
 		clear() {
 			set(new Map<K, V>());
 		}

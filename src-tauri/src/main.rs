@@ -1,7 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod analysis;
 mod api;
 
 use app::{
@@ -20,6 +19,7 @@ async fn main() {
 
             // Start internal api routes
             api::trendmap::tickers::listen();
+            api::account::verify::listen();
 
             Ok(())
         })

@@ -1,4 +1,8 @@
+# Dependecies
 node_modules
+
+# DB
+*.db
 
 # Output
 .output
