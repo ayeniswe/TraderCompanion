@@ -1,6 +1,6 @@
-interface AlpacaCredentials {
+interface ApiCredential {
 	key: string;
 	secret: string;
 }
 
-export type { AlpacaCredentials };
+export type { ApiCredential };

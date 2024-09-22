@@ -1,13 +1,13 @@
 import { generateUID } from '$lib';
 import { writable, get } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import { send } from '../../api/account/verify';
-import { Method, RPCRequest } from '../../api/model';
-import type { AlpacaCredentials } from '../../api/account/model';
+import { send } from '../../api/account/create_api_credentials';
+import { Method, RPCRequest, Version } from '../../api/model';
+import type { ApiCredential } from '../../api/account/model';
 import { Theme } from './model';
 
 function appStore() {
-	const theme: Writable<Theme> = writable(Theme.Dark);
+	const theme: Writable<Theme> = writable(Theme.Light);
 	const ready: Writable<boolean> = writable(false);
 	const loading: Writable<boolean> = writable(false);
 	const setupError: Writable<boolean> = writable(false);
@@ -19,7 +19,7 @@ function appStore() {
 		loading,
 		setupError,
 		setupForm,
-		async setAlpacaCredentials(event: Event & { currentTarget: HTMLButtonElement }) {
+		async setApiCredential(event: Event & { currentTarget: HTMLButtonElement }) {
 			event.preventDefault();
 
 			const formData = new FormData(get(setupForm)!);
@@ -27,7 +27,7 @@ function appStore() {
 			const secret = formData.get('alpaca-secret')?.toString();
 			if (key && secret) {
 				// Verify api credentials
-				loading.set(true)
+				loading.set(true);
 				await fetch('/alpaca/account', {
 					method: 'GET',
 					headers: {
@@ -35,17 +35,17 @@ function appStore() {
 						'APCA-API-SECRET-KEY': secret
 					}
 				}).then((response) => {
-					loading.set(false)
+					loading.set(false);
 					if (response.ok) {
-						// Update system env for later reading of creds
+						// Update application database
 						send(
-							new RPCRequest<AlpacaCredentials>(
-								'v1',
+							new RPCRequest<ApiCredential>(
+								Version.V1,
 								{
 									key,
 									secret
 								},
-								generateUID(),
+								Number(generateUID()),
 								Method.Put
 							)
 						);

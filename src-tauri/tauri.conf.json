@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "TraderCompanion",
+    "productName": "InvestorCompanion",
     "version": "0.1.0"
   },
   "tauri": {
@@ -16,7 +16,7 @@
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
+      "category": "Finance",
       "copyright": "",
       "deb": {
         "depends": []
@@ -56,10 +56,12 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 400,
         "resizable": true,
-        "title": "TraderCompanion",
-        "width": 800,
+        "title": "InvestorCompanion",
+        "width": 450,
+        "minHeight": 400,
+        "minWidth": 450,
         "fileDropEnabled": false
       }
     ]

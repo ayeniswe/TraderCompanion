@@ -4,7 +4,7 @@
 mod api;
 
 use app::{
-    external::api::alpaca::client::Alpaca,
+    external::api::{alpaca::client::Alpaca, client::Authenticate},
     global::{ALPACA, APP_HANDLE},
 };
 use tauri::Manager;
@@ -15,10 +15,10 @@ async fn main() {
         .setup(|app| {
             // Initialize once global constants
             let _ = APP_HANDLE.set(app.app_handle());
-            let _ = ALPACA.set(Alpaca::new(None));
 
             // Start internal api routes
             api::trendmap::tickers::listen();
+            api::account::create_api_credentials::listen();
             api::account::verify::listen();
 
             Ok(())

@@ -49,7 +49,7 @@ function generateUID() {
 	// Generate a random 16-digit number
 	const randomNumber = BigInt(Math.floor(Math.random() * Number(max - min))) + min;
 
-	return randomNumber.toString();
+	return Number(randomNumber);
 }
 
 export { createMapStore, generateUID };
