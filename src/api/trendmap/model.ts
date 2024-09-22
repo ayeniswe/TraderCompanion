@@ -11,6 +11,10 @@ interface Ticker {
 	short_term: Trend;
 }
 
+interface TickersResponse {
+	[key: string]: Ticker;
+}
+
 enum Trend {
 	Up = 'Up',
 	Down = 'Down',
@@ -19,4 +23,4 @@ enum Trend {
 }
 
 export { Trend };
-export type { Ticker, Group };
+export type { Ticker, Group, TickersResponse };

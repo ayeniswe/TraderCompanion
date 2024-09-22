@@ -1,4 +1,10 @@
+use app::utils::UID;
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub enum Version {
+    V1,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 pub enum Method {
@@ -34,14 +40,14 @@ impl RPCError {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RPCRequest<T> {
-    pub version: String,
+    pub version: Version,
     pub method: Method,
     pub payload: T,
-    pub id: String,
+    pub id: UID,
 }
 
 impl<T> RPCRequest<T> {
-    pub fn new(version: String, payload: T, id: String, method: Method) -> Self {
+    pub fn new(version: Version, payload: T, id: UID, method: Method) -> Self {
         RPCRequest {
             version,
             method,
@@ -53,14 +59,14 @@ impl<T> RPCRequest<T> {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RPCResponse<T> {
-    pub version: String,
-    pub response: T,
+    pub version: Version,
+    pub response: Option<T>,
     pub error: Option<RPCError>,
-    pub id: String,
+    pub id: UID,
 }
 
 impl<T> RPCResponse<T> {
-    pub fn new(version: String, response: T, id: String, error: Option<RPCError>) -> Self {
+    pub fn new(version: Version, response: Option<T>, id: UID, error: Option<RPCError>) -> Self {
         RPCResponse {
             version,
             response,

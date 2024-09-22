@@ -25,6 +25,7 @@ url = "2.5.2"
 polars = { version = "0.42.0", feature = ["json"] }
 chrono = "0.4.31"
 diesel = { version = "2.2.4", features = ["sqlite"] }
+rand = "0.8.5"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

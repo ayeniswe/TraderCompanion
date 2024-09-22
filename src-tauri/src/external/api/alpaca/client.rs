@@ -8,7 +8,7 @@ use crate::external::api::{
     utils::is_valid_date_format,
 };
 use polars::frame::DataFrame;
-use std::{collections::HashMap, env};
+use std::collections::HashMap;
 use thiserror::Error;
 
 pub struct Alpaca<'a> {
@@ -33,19 +33,10 @@ impl<'a> Alpaca<'a> {
     /// If no config is supplied then will use defaults:
     ///
     /// `feed` - iex
-    pub fn new(config: Option<AlpacaConfig>) -> Self {
+    pub fn new(config: Option<AlpacaConfig>, auth: Authenticate) -> Self {
         Self {
             config: config.unwrap_or_default(),
-            data_client: APIClient::new(
-                "https://data.alpaca.markets",
-                "v2",
-                Authenticate::Token {
-                    header_key: "APCA-API-KEY-ID".to_string(),
-                    header_secret: "APCA-API-SECRET-KEY".to_string(),
-                    key: env::var("APCA_KEY").expect("'APCA_KEY' can not be found. Please set the enviroment variable 'APCA_KEY'"),
-                    secret: env::var("APCA_SECRET").expect("'APCA_SECRET' can not be found. Please set the enviroment variable 'APCA_SECRET'"),
-                },
-            ),
+            data_client: APIClient::new("https://data.alpaca.markets", "v2", auth),
         }
     }
 

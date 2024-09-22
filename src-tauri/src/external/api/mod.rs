@@ -1,3 +1,3 @@
 pub mod alpaca;
-mod client;
+pub mod client;
 mod utils;

@@ -1,5 +1,5 @@
 use reqwest::{Client, RequestBuilder};
-use std::{collections::HashMap, path::Path};
+use std::collections::HashMap;
 use tauri::Url;
 
 pub enum Authenticate {

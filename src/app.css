@@ -4,19 +4,25 @@
 
 .light {
 	.primary-theme {
-		@apply bg-slate-200;
+		@apply bg-slate-400;
 		@apply text-black;
 		@apply border-black;
 	}
 
-    .accent-theme {
-		@apply hover:bg-gray-400;
+	.accent-theme {
+		@apply hover:bg-gray-500;
 	}
 
 	.secondary-theme {
 		@apply bg-gray-500;
-        @apply text-black;
-        @apply border-black;
+		@apply text-black;
+		@apply border-black;
+	}
+
+	.tertiary-theme {
+		@apply bg-gray-600;
+		@apply text-black;
+		@apply border-black;
 	}
 
 	input {
@@ -26,11 +32,11 @@
 		@apply border-black;
 	}
 
-    button {
-        @apply text-black;
-        @apply bg-blue-500;
-        @apply hover:bg-blue-600
-    }
+	button {
+		@apply text-black;
+		@apply bg-blue-500;
+		@apply hover:bg-blue-600;
+	}
 }
 .dark {
 	.primary-theme {
@@ -41,8 +47,8 @@
 
 	.secondary-theme {
 		@apply bg-gray-900;
-        @apply text-slate-200;
-        @apply border-black;
+		@apply text-slate-200;
+		@apply border-black;
 	}
 
 	.accent-theme {
@@ -56,9 +62,25 @@
 		@apply border-gray-500;
 	}
 
-    button {
-        @apply text-slate-200;
-        @apply bg-blue-500;
-        @apply hover:bg-blue-600
-    }
+	button {
+		@apply text-slate-200;
+		@apply bg-blue-500;
+		@apply hover:bg-blue-600;
+	}
+}
+
+/* WebKit scrollbar */
+::-webkit-scrollbar {
+	width: 2.5px;
+}
+
+::-webkit-scrollbar-thumb {
+	@apply bg-blue-500;
+	@apply rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+	@apply hover:bg-blue-600;
+}
+::-webkit-scrollbar-track {
+	@apply bg-transparent;
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { generateUID } from '$lib';
-	import { app, trendMap } from '../../store';
-	import { Theme } from '../../store/app/model';
+	import { onMount } from 'svelte';
+	import { trendMap } from '../../store';
+	import { listen } from '../../api/trendmap/tickers';
 
 	const {
 		store,
@@ -27,7 +27,19 @@
 		validateGroupInput
 	} = trendMap;
 
-	const { theme } = app;
+	onMount(() => {
+		// Start internal api routes
+		let unlisten = listen();
+
+		// Start intervals
+		trendMap.startUpdateTrendMap();
+
+		// Cleanup on component unmount
+		return async () => {
+			(await unlisten)();
+			trendMap.stopUpdateTrendMap();
+		};
+	});
 </script>
 
 <div class="w-screen h-screen">
@@ -81,31 +93,33 @@
 		{/if}
 	</div>
 	<div
-		class="primary-theme w-full h-full border-8 overflow-y-auto p-9 grid max-2xl:grid-cols-8 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
+		class="primary-theme w-full h-full border-8 overflow-y-auto p-9 grid grid-cols-10 max-2xl:grid-cols-8 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
 	>
 		{#each $store as [id, { name, tickers }]}
 			<!-- svelte-ignore a11y-no-static-element-interactions (redudant role) -->
 			<section
-				class="h-full group select-none accent-theme p-16 relative rounded-lg transition-all duration-200 flex flex-col items-center gap-1"
+				class="h-64 w-44 group select-none p-16 relative rounded-lg transition-all duration-200 flex flex-col items-center gap-1"
 				on:dragleave={handleTickerGroupingDragLeave}
 				on:dragenter={handleTickerGroupingDragEnter}
 				on:dragover={handleTickerGroupingDragOver}
 				on:drop={handleTickerGroupingDrop}
 				{id}
 			>
-				<div class="h-full flex flex-col">
+				<div class="h-full flex flex-col gap-1.5 p-0.5 overflow-y-auto">
 					{#each tickers as [name, { mid_term, long_term, short_term }]}
 						<div
-							class="cursor-pointer"
+							class="cursor-pointer relative"
 							on:dragstart={handleTickerDragStart}
 							on:dragend={handleTickerDragEnd}
 							on:contextmenu={(e) => showDeleteTickerWarning(id, e)}
 							draggable="true"
 							id={name}
 						>
-							<div class="primary-theme w-36 h-8 rounded-md absolute border border-black"></div>
 							<div
-								class="secondary-theme w-36 h-8 rounded-md relative -top-1 border p-1 flex gap-3 border-black"
+								class="primary-theme w-36 h-8 rounded-md top-1 absolute border border-black"
+							></div>
+							<div
+								class="tertiary-theme w-36 h-8 rounded-md relative border p-1 flex gap-3 border-black"
 							>
 								<span class="font-semibold text-sm flex items-center justify-center">{name}</span>
 								<div class="flex gap-1 items-center w-full">
@@ -121,6 +135,7 @@
 					on:focusout={disableGroupNameChange}
 					on:dblclick={allowGroupNameChange}
 					on:input={(e) => validateGroupInput(id, e)}
+					tabindex="-1"
 					class="hidden bg-transparent-important font-extrabold absolute rounded-sm left-0 top-0 m-4 p-1 w-3/4"
 					value={name}
 					placeholder={'Untitled'}

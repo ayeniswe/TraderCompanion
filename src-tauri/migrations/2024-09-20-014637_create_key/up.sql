@@ -1,6 +1,0 @@
--- Your SQL goes here
-CREATE TABLE keys (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    api_key VARCHAR NOT NULL,
-    api_secret VARCHAR NOT NULL
-)

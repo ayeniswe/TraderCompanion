@@ -1,3 +1,7 @@
+enum Version {
+	V1 = 'V1'
+}
+
 enum Method {
 	Get = 'Get',
 	Post = 'Post',
@@ -6,12 +10,12 @@ enum Method {
 }
 
 class RPCRequest<T> {
-	version: string;
+	version: Version;
 	method: Method;
 	payload: T;
-	id: string;
+	id: number;
 
-	constructor(version: string, payload: T, id: string, method: Method) {
+	constructor(version: Version, payload: T, id: number, method: Method) {
 		this.id = id;
 		this.version = version;
 		this.payload = payload;
@@ -20,12 +24,12 @@ class RPCRequest<T> {
 }
 
 class RPCResponse<T> {
-	version: string;
-	response: T;
+	version: Version;
+	response?: T;
 	error?: RPCError;
-	id: string;
+	id: number;
 
-	constructor(version: string, response: T, id: string, error: RPCError) {
+	constructor(version: Version, response: T, id: number, error: RPCError) {
 		this.id = id;
 		this.version = version;
 		this.response = response;
@@ -43,4 +47,4 @@ class RPCError {
 	}
 }
 
-export { RPCError, RPCRequest, RPCResponse, Method };
+export { RPCError, RPCRequest, RPCResponse, Method, Version };
