@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { trendMap } from '../../store';
-	import { listen } from '../../api/trendmap/tickers';
+	import { listen_get_layout, get_layout } from '../../api/trendmap/get_layout';
+	import { listen_ticker } from '../../api/trendmap/tickers';
 
 	const {
 		store,
@@ -29,14 +30,19 @@
 
 	onMount(() => {
 		// Start internal api routes
-		let unlisten = listen();
+		let unlisten_tickers = listen_ticker();
+		let unlisten_get_layout = listen_get_layout();
+
+		// Get latest layout
+		get_layout();
 
 		// Start intervals
 		trendMap.startUpdateTrendMap();
 
 		// Cleanup on component unmount
 		return async () => {
-			(await unlisten)();
+			(await unlisten_get_layout)();
+			(await unlisten_tickers)();
 			trendMap.stopUpdateTrendMap();
 		};
 	});
@@ -95,7 +101,7 @@
 	<div
 		class="primary-theme w-full h-full border-8 overflow-y-auto p-9 grid grid-cols-10 max-2xl:grid-cols-8 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
 	>
-		{#each $store as [id, { name, tickers }]}
+		{#each $store as {id, name, tickers }}
 			<!-- svelte-ignore a11y-no-static-element-interactions (redudant role) -->
 			<section
 				class="h-64 w-44 group select-none p-16 relative rounded-lg transition-all duration-200 flex flex-col items-center gap-1"
@@ -103,10 +109,10 @@
 				on:dragenter={handleTickerGroupingDragEnter}
 				on:dragover={handleTickerGroupingDragOver}
 				on:drop={handleTickerGroupingDrop}
-				{id}
+				id={String(id)}
 			>
 				<div class="h-full flex flex-col gap-1.5 p-0.5 overflow-y-auto">
-					{#each tickers as [name, { mid_term, long_term, short_term }]}
+					{#each tickers as { name, mid_term, long_term, short_term }}
 						<div
 							class="cursor-pointer relative"
 							on:dragstart={handleTickerDragStart}

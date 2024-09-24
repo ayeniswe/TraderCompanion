@@ -1,6 +1,43 @@
 import { writable } from 'svelte/store';
 
 /**
+ * Create a writable Svelte store wrapper for common array APIs
+ */
+function createArrayStore<T>() {
+    const { subscribe, set, update } = writable<T[]>([]);
+
+    return {
+        subscribe,
+        add(item: T) {
+            update((array) => [...array, item]);
+        },
+        set(idx: number, item: T) {
+            update((array) => {
+                const newArray = [...array];
+                newArray[idx] = item;
+                return newArray;
+            });
+        },
+        remove(index: number) {
+            update((array) => array.filter((_, i) => i !== index));
+        },
+        restore(groups: T[]) {
+            set(groups);
+        },
+        clear() {
+            set([]);
+        },
+        get(idx: number) {
+            let value: T | undefined;
+            subscribe((array) => {
+                value = array[idx];
+            })();
+            return value; 
+        }
+    };
+}
+
+/**
  * Create a writable svelte store wrapper for common
  * map apis
  */
@@ -52,4 +89,4 @@ function generateUID() {
 	return Number(randomNumber);
 }
 
-export { createMapStore, generateUID };
+export { createMapStore, generateUID, createArrayStore };

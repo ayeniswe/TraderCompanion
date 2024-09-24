@@ -17,7 +17,7 @@ pub fn listen() {
                 serde_json::from_str::<RPCRequest<ApiCredential>>(event.payload().unwrap())
             {
                 let mut conn: SqliteConnection = establish_connection();
-                upsert_api_credentials(&mut conn, &req.payload.key, &req.payload.secret).unwrap();
+                let _ = upsert_api_credentials(&mut conn, &req.payload.key, &req.payload.secret);
 
                 // Set global alpaca api for all api usage call outs
                 let _ = ALPACA.set(Alpaca::new(

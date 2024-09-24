@@ -3,10 +3,7 @@
 
 mod api;
 
-use app::{
-    external::api::{alpaca::client::Alpaca, client::Authenticate},
-    global::{ALPACA, APP_HANDLE},
-};
+use app::global::APP_HANDLE;
 use tauri::Manager;
 
 #[tokio::main]
@@ -17,9 +14,12 @@ async fn main() {
             let _ = APP_HANDLE.set(app.app_handle());
 
             // Start internal api routes
-            api::trendmap::tickers::listen();
             api::account::create_api_credentials::listen();
             api::account::verify::listen();
+
+            api::trendmap::tickers::listen();
+            api::trendmap::save_layout::listen();
+            api::trendmap::get_layout::listen();
 
             Ok(())
         })

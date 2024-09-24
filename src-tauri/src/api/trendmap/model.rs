@@ -2,9 +2,16 @@ use app::analysis::trend::Trend;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Clone, Deserialize)]
+pub struct Group {
+    name: String,
+    id: u16,
+    tickers: Vec<Ticker>,
+}
+
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct Ticker {
     pub name: String,
-    pub group_id: String,
+    pub group_id: u16,
     long_term: Trend,
     mid_term: Trend,
     short_term: Trend,
@@ -12,7 +19,7 @@ pub struct Ticker {
 impl Ticker {
     pub fn new(
         name: String,
-        group_id: String,
+        group_id: u16,
         long_term: Trend,
         mid_term: Trend,
         short_term: Trend,
