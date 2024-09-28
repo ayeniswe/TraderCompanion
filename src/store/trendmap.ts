@@ -12,7 +12,7 @@ function trendMapStore() {
   const loading: Writable<boolean> = writable(false);
   const ticker: Writable<string> = writable("");
   const errorMessage: Writable<string> = writable("");
-  const draggingGroupId: Writable<string> = writable("");
+  const draggingGroupId: Writable<number> = writable(0);
   const trash: Writable<{ groupId: number; tickerId: string }> = writable({
     groupId: -1,
     tickerId: "",
@@ -42,7 +42,7 @@ function trendMapStore() {
 
   function closeAddTickerDialog() {
     addTickerDialog.set(false);
-    errorMessage.set("")
+    errorMessage.set("");
   }
 
   function timeUntilNextHour() {
@@ -92,6 +92,7 @@ function trendMapStore() {
     errorMessage,
     addTickerDialog,
     deleteTickerDialog,
+    getAllTickers,
     disableGroupNameChange(
       event: Event & { currentTarget: EventTarget & HTMLInputElement },
     ) {
@@ -118,21 +119,34 @@ function trendMapStore() {
     deleteTicker() {
       const { groupId, tickerId } = get(trash);
 
-      // Remove ticker from persistent store
-      const group = store.get(groupId)!;
-      group.tickers = group.tickers.filter((value) => value.name !== tickerId);
-      store.set(groupId, group);
-      deleteTickerDialog.set(false);
-
-      // Remove grouping box
+      // Remove grouping
       const grouping = document.getElementById(String(groupId))!;
       if (grouping.firstElementChild!.children.length <= 1) {
-        grouping.lastElementChild!.classList.add("hidden");
-        grouping.classList.remove("secondary-theme");
-
-        grouping.role = null;
-        group.name = "";
+        store.remove(groupId);
+        // Iterate through each group and update index position
+        // TODO: better way to onyl shift what changes
+        let count = 0;
+        const updatedGroups = get(store).map((group) => {
+          const updatedGroup = {
+            id: count,
+            name: group.name,
+            tickers: group.tickers,
+          };
+          count += 1;
+          return updatedGroup;
+        });
+        store.restore(updatedGroups);
+      } else {
+        // Remove ticker from persistent store
+        const group = store.get(groupId)!;
+        console.log(groupId, store.get(groupId));
+        group.tickers = group.tickers.filter(
+          (value) => value.name !== tickerId,
+        );
+        store.set(groupId, group);
       }
+
+      deleteTickerDialog.set(false);
 
       save_layout(
         new RPCRequest(Version.V1, get(store), generateUID(), Method.Put),
@@ -167,7 +181,7 @@ function trendMapStore() {
               ),
             );
           },
-          60 * 60 * 4 * 1000
+          60 * 60 * 4 * 1000,
         ); // 4 hour in milliseconds
         updateShortTrendMap.set(id);
       }, initial4HourDelay);
@@ -278,7 +292,7 @@ function trendMapStore() {
       event.dataTransfer!.effectAllowed = "move";
 
       // Group id is needed to prevent reentry on drag
-      const groupId = ticker.parentElement!.parentElement!.id;
+      const groupId = Number(ticker.parentElement!.parentElement!.id);
       event.dataTransfer?.setData(
         "text",
         JSON.stringify({
@@ -294,7 +308,7 @@ function trendMapStore() {
       event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       event.currentTarget.classList.remove("animate-bounce");
-      draggingGroupId.set("");
+      draggingGroupId.set(0);
     },
     handleTickerGroupingDragOver(
       event: DragEvent & { currentTarget: EventTarget & HTMLElement },
@@ -311,7 +325,7 @@ function trendMapStore() {
       Array.from(newPotentialGroup.children).forEach((child) =>
         child.classList.add("pointer-events-none"),
       );
-      if (newPotentialGroup.id !== get(draggingGroupId)) {
+      if (newPotentialGroup.id !== String(get(draggingGroupId))) {
         event.currentTarget.classList.add("secondary-theme");
       }
     },
@@ -383,20 +397,20 @@ function trendMapStore() {
         // therefore 1 would represent 0 implying it was 1 ticker in the group before
         // moving
         if (oldGrouping.firstElementChild!.children.length <= 1) {
-          oldGrouping.lastElementChild!.classList.add("hidden");
-          // Remove grouping box
-          oldGrouping.classList.remove("secondary-theme");
-
-          // Reset store group name
-          const group = store.get(groupId)!;
-          group.name = "";
-          // Reset actual user view group name
-          store.set(groupId, group);
-          const oldGroupingName =
-            oldGrouping.lastElementChild as HTMLInputElement;
-          oldGroupingName.value = "";
-
-          oldGrouping.role = null;
+          store.remove(groupId);
+          // Iterate through each group and update index position
+          // TODO: better way to onyl shift what changes
+          let count = 0;
+          const updatedGroups = get(store).map((group) => {
+            const updatedGroup = {
+              id: count,
+              name: group.name,
+              tickers: group.tickers,
+            };
+            count += 1;
+            return updatedGroup;
+          });
+          store.restore(updatedGroups);
         }
       }
 

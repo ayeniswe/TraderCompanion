@@ -8,6 +8,7 @@ function createArrayStore<T>() {
 
   return {
     subscribe,
+    update,
     add(item: T) {
       update((array) => [...array, item]);
     },

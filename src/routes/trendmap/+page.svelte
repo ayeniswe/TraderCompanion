@@ -2,7 +2,9 @@
 	import { onMount } from 'svelte';
 	import { trendMap } from '../../store';
 	import { listen_get_layout, get_layout } from '../../api/trendmap/get_layout';
-	import { listen_ticker } from '../../api/trendmap/tickers';
+	import { listen_ticker, send } from '../../api/trendmap/tickers';
+	import { Method, RPCRequest, Version } from '../../api/model';
+	import { generateUID } from '../../lib';
 
 	const {
 		store,
@@ -11,6 +13,7 @@
 		errorMessage,
 		addTickerDialog,
 		deleteTickerDialog,
+		getAllTickers,
 		allowGroupNameChange,
 		disableGroupNameChange,
 		showDeleteTickerWarning,
@@ -37,6 +40,9 @@
 		// Get latest layout
 		get_layout();
 
+		// Fresh update of all ticker
+        send(new RPCRequest(Version.V1, getAllTickers(), generateUID(), Method.Get));
+		
 		// Start intervals
 		trendMap.startUpdateTrendMap();
 

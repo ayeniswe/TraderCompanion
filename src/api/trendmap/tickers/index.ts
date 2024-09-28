@@ -41,9 +41,9 @@ function listen_ticker() {
           new RPCRequest(Version.V1, get(store), generateUID(), Method.Put),
         );
 
-        closeAddTickerDialog()
+        closeAddTickerDialog();
       } else {
-        errorMessage.set(event.payload.error.message)
+        errorMessage.set(event.payload.error.message);
       }
 
       loading.set(false);

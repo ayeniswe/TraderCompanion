@@ -62,7 +62,7 @@
 
 /* WebKit scrollbar */
 ::-webkit-scrollbar {
-  width: 2.5px;
+  width: 5px;
 }
 ::-webkit-scrollbar-thumb {
   @apply bg-blue-500;
