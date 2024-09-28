@@ -23,7 +23,7 @@
 </script>
 
 <div class={$theme === Theme.Dark ? 'dark' : 'light'}>
-	{#if $ready}
+	{#if !$ready}
 		<div
 			class="primary-theme w-screen h-screen border-8 rounded-sm font-semibold flex items-center justify-center"
 		>

@@ -1,3 +1,3 @@
-import { createMapStore, generateUID } from './utils';
+import { createMapStore, generateUID } from "./utils";
 
 export { createMapStore, generateUID };

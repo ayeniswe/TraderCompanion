@@ -7,6 +7,8 @@
 	const {
 		store,
 		ticker,
+		loading,
+		errorMessage,
 		addTickerDialog,
 		deleteTickerDialog,
 		allowGroupNameChange,
@@ -27,7 +29,6 @@
 		handleTickerGroupingDrop,
 		validateGroupInput
 	} = trendMap;
-
 	onMount(() => {
 		// Start internal api routes
 		let unlisten_tickers = listen_ticker();
@@ -56,15 +57,20 @@
 	>
 		{#if $addTickerDialog}
 			<div
-				class="secondary-theme border w-72 h-14 rounded-sm font-semibold flex items-center justify-between p-3 gap-3"
+				class="secondary-theme border w-72 h-16 rounded-sm font-semibold flex items-center justify-between p-3 gap-3"
 			>
 				<div class="flex items-center w-full justify-around">
 					<h1>Ticker</h1>
-					<input
-						on:input={setTicker}
-						placeholder="TSLA"
-						class="p-1 rounded-md border text-sm font-normal transition-all focus:duration-0 w-24"
-					/>
+					<div class="relative justify-center flex items-end">
+						<input
+							on:input={setTicker}
+							placeholder="TSLA"
+							class="p-1 rounded-md border {$errorMessage !== "" ? "border-red-important" : ""} text-sm font-normal transition-all focus:duration-0 w-24"
+						/>
+						{#if $errorMessage !== ""}
+							<p class="text-xs absolute -bottom-4 text-red-600">{$errorMessage}</p>
+						{/if}
+					</div>
 				</div>
 				<button
 					on:click={addTicker}
@@ -125,14 +131,20 @@
 								class="primary-theme w-36 h-8 rounded-md top-1 absolute border border-black"
 							></div>
 							<div
-								class="tertiary-theme w-36 h-8 rounded-md relative border p-1 flex gap-3 border-black"
-							>
-								<span class="font-semibold text-sm flex items-center justify-center">{name}</span>
-								<div class="flex gap-1 items-center w-full">
-									<svg class="rounded-full {toColor(long_term)} w-5 h-5"></svg>
-									<svg class="rounded-full {toColor(mid_term)} w-4 h-4"></svg>
-									<svg class="rounded-full {toColor(short_term)} w-3 h-3"></svg>
+								class="tertiary-theme w-36 h-8 rounded-md relative border p-1 flex items-center gap-3 border-black"
+								>
+								<div class="flex gap-1 items-center">
+									{#if $loading}
+										<svg class="skeleton w-5 h-5 rounded-full"></svg>
+										<svg class="skeleton w-4 h-4 rounded-full"></svg>
+										<svg class="skeleton w-3 h-3 rounded-full"></svg>
+									{:else}
+										<svg class="rounded-full {toColor(long_term)} w-5 h-5"></svg>
+										<svg class="rounded-full {toColor(mid_term)} w-4 h-4"></svg>
+										<svg class="rounded-full {toColor(short_term)} w-3 h-3"></svg>
+									{/if}
 								</div>
+								<span class="font-semibold text-sm flex items-center justify-center">{name}</span>
 							</div>
 						</div>
 					{/each}

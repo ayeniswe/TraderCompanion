@@ -3,84 +3,74 @@
 @tailwind utilities;
 
 .light {
-	.primary-theme {
-		@apply bg-slate-400;
-		@apply text-black;
-		@apply border-black;
-	}
-
-	.accent-theme {
-		@apply hover:bg-gray-500;
-	}
-
-	.secondary-theme {
-		@apply bg-gray-500;
-		@apply text-black;
-		@apply border-black;
-	}
-
-	.tertiary-theme {
-		@apply bg-gray-600;
-		@apply text-black;
-		@apply border-black;
-	}
-
-	input {
-		@apply bg-white;
-		@apply hover:bg-gray-200;
-		@apply focus:bg-white;
-		@apply border-black;
-	}
-
-	button {
-		@apply text-black;
-		@apply bg-blue-500;
-		@apply hover:bg-blue-600;
-	}
+  .primary-theme {
+    @apply bg-slate-400;
+    @apply text-black;
+    @apply border-black;
+  }
+  .accent-theme {
+    @apply hover:bg-gray-500;
+  }
+  .secondary-theme {
+    @apply bg-gray-500;
+    @apply text-black;
+    @apply border-black;
+  }
+  .tertiary-theme {
+    @apply bg-gray-600;
+    @apply text-black;
+    @apply border-black;
+  }
+  input {
+    @apply bg-white;
+    @apply hover:bg-gray-200;
+    @apply focus:bg-white;
+    @apply border-black;
+  }
+  button {
+    @apply text-black;
+    @apply bg-blue-500;
+    @apply hover:bg-blue-600;
+  }
 }
 .dark {
-	.primary-theme {
-		@apply bg-gray-800;
-		@apply text-slate-200;
-		@apply border-black;
-	}
-
-	.secondary-theme {
-		@apply bg-gray-900;
-		@apply text-slate-200;
-		@apply border-black;
-	}
-
-	.accent-theme {
-		@apply hover:bg-gray-600;
-	}
-
-	input {
-		@apply bg-gray-700;
-		@apply hover:bg-gray-600;
-		@apply focus:bg-gray-700;
-		@apply border-gray-500;
-	}
-
-	button {
-		@apply text-slate-200;
-		@apply bg-blue-500;
-		@apply hover:bg-blue-600;
-	}
+  .primary-theme {
+    @apply bg-gray-800;
+    @apply text-slate-200;
+    @apply border-black;
+  }
+  .secondary-theme {
+    @apply bg-gray-900;
+    @apply text-slate-200;
+    @apply border-black;
+  }
+  .accent-theme {
+    @apply hover:bg-gray-600;
+  }
+  input {
+    @apply bg-gray-700;
+    @apply hover:bg-gray-600;
+    @apply focus:bg-gray-700;
+    @apply border-gray-500;
+  }
+  button {
+    @apply text-slate-200;
+    @apply bg-blue-500;
+    @apply hover:bg-blue-600;
+  }
 }
 
 /* WebKit scrollbar */
 ::-webkit-scrollbar {
-	width: 2.5px;
+  width: 2.5px;
 }
-
 ::-webkit-scrollbar-thumb {
-	@apply bg-blue-500;
-	@apply rounded-full;
+  @apply bg-blue-500;
+  @apply rounded-full;
 }
 ::-webkit-scrollbar-thumb:hover {
-	@apply hover:bg-blue-600;
+  @apply hover:bg-blue-600;
 }
 ::-webkit-scrollbar-track {
-	@apply bg-transparent;
+  @apply bg-transparent;
 }

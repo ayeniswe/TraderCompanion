@@ -1,6 +1,6 @@
 enum Theme {
-	Dark,
-	Light
+  Dark,
+  Light,
 }
 
 export { Theme };
