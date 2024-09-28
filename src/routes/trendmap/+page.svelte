@@ -57,8 +57,8 @@
 
 <div class="w-screen h-screen">
 	<div
-		class="absolute w-full h-full flex items-end p-3 {$addTickerDialog || $deleteTickerDialog
-			? 'justify-center items-center z-10'
+		class="{$addTickerDialog || $deleteTickerDialog
+			? 'absolute w-full h-full flex p-3 justify-center items-center z-10'
 			: null}"
 	>
 		{#if $addTickerDialog}
