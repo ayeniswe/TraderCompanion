@@ -9,7 +9,7 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "app": "tauri dev",
-    "db": "diesel database reset --migration-dir=src-tauri/migrations --database-url=src-tauri/app.db",
+    "db": "diesel database reset --migration-dir=backend/migrations --database-url=backend/app.db",
     "app:build": "tauri build"
   },
   "devDependencies": {
