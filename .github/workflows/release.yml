@@ -3,9 +3,9 @@ name: publish
 on:
   push:
     tags:
-      - "*"  # This triggers on any tag push
+      - "*" # This triggers on any tag push
   workflow_dispatch: # allow manual trigger
-   
+
 jobs:
   # Linux Build Job
   build-linux:
@@ -17,15 +17,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'  # This always installs the latest LTS 
-          
+          node-version: "lts/*" # This always installs the latest LTS
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           components: rustfmt
           override: true
-          
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -33,13 +33,13 @@ jobs:
 
       - name: Install Diesel CLI
         run: cargo install diesel_cli --no-default-features --features sqlite
-        
+
       - name: Install npm dependencies
         run: npm install
-     
+
       - name: Startup a Fresh DB (Linux)
         run: npm run db
-        
+
       - name: Build Tauri App
         run: npm run app:build
 
@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tauri-linux-build
-          path: ./src-tauri/target/release/bundle/  # Adjust this path to your Tauri Linux output folder
+          path: ./src-tauri/target/release/bundle/ # Adjust this path to your Tauri Linux output folder
 
   build-windows:
     runs-on: windows-latest
@@ -58,39 +58,35 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'  # This always installs the latest LTS version
+          node-version: "lts/*" # This always installs the latest LTS version
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-          
+
       - name: Download SQLite Binary
         run: |
-         curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
-         tar -xf sqlite-dll-win-x64-3460100.zip
-     
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-     
-      - name: Build SQLite3 .lib
+          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
+          unzip sqlite-dll-win-x64-3460100.zip
+
+      - name: Build Sqlite lib
+        uses: ilammy/msvc-dev-cmd@v1
         run: |
-         cd sqlite-dll-win-x64-3460100
-         VsDevCmd.bat
-         lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
-         
-      - name: Set environment variables for SQLite3
-        run: |
-          set PATH="%cd%\sqlite-dll-win-x64-3460100;%PATH%"
-          set LIB="%cd%\sqlite-dll-win-x64-3460100;%LIB%"
-      
+          lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
+
+      # - name: Set environment variables for SQLite3
+      #   run: |
+      #     set PATH="%cd%;%PATH%"
+      #     set LIB="%cd%;%LIB%"
+
       - name: Install Diesel CLI
         run: cargo install diesel_cli --no-default-features --features sqlite
 
       - name: Install npm dependencies
         run: npm install
- 
+
       - name: Build Tauri App (Windows)
         run: npm run app:build
 
@@ -98,4 +94,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tauri-windows-build
-          path: ./src-tauri/target/release/bundle/  # Adjust this path to your Tauri Windows output folder
+          path: ./src-tauri/target/release/bundle/ # Adjust this path to your Tauri Windows output folder

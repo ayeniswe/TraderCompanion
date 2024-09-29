@@ -40,12 +40,16 @@
       },
       "deb": {
         "depends": ["libgtk-3-0","libsqlite3-0"],
-        "files": ["app.db"],
+        "files": {
+          "app.db": "app.db"
+        },
         "section": "misc"
       },
       "rpm": {
         "depends": ["libgtk-3.so.0","sqlite-libs"],
-        "files": ["app.db"],
+        "files": {
+          "app.db": "app.db"
+        },
         "release": "1"
       }
     },
