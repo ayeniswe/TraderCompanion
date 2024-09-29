@@ -8,8 +8,8 @@
     "ui:preview": "vite preview",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "app": "tauri dev",
     "db": "diesel database reset --migration-dir=backend/migrations --database-url=backend/app.db",
+    "app": "npm run db && tauri dev",
     "app:build": "tauri build"
   },
   "devDependencies": {
