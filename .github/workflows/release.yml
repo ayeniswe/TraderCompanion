@@ -65,24 +65,19 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Download SQLite Binary
+      - name: Install sqlite
+        shell: cmd
         run: |
-          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
-          unzip sqlite-dll-win-x64-3460100.zip
+          choco install sqlite
+          cd /D C:\ProgramData\chocolatey\lib\SQLite\tools
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          lib /machine:x64 /def:sqlite3.def /out:sqlite3.lib
 
-      - name: Setup MSVC tools
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Build Sqlite lib
+      - name: Set variables for sqlite
+        shell: bash
         run: |
-          dir
-          lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
-
-      - name: Set environment variables for SQLite3
-        run: echo "Setting environment variables..."
-        env:
-          PATH: "${{ github.workspace }};${{ env.PATH }}"
-          LIB: "${{ github.workspace }};${{ env.LIB }}"
+          echo "C:\ProgramData\chocolatey\lib\SQLite\tools" >> $GITHUB_PATH
+          echo "SQLITE3_LIB_DIR=C:\ProgramData\chocolatey\lib\SQLite\tools" >> $GITHUB_ENV
 
       - name: Install Diesel CLI
         run: cargo install diesel_cli --no-default-features --features sqlite
