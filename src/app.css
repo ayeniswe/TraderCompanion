@@ -44,8 +44,10 @@
     @apply text-slate-200;
     @apply border-black;
   }
-  .accent-theme {
-    @apply hover:bg-gray-600;
+  .tertiary-theme {
+    @apply bg-gray-950;
+    @apply text-slate-200;
+    @apply border-black;
   }
   input {
     @apply bg-gray-700;

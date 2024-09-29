@@ -19,8 +19,15 @@ function appStore() {
     loading,
     setupError,
     setupForm,
+    changeTheme() {
+      if (get(theme) === Theme.Dark) {
+        theme.set(Theme.Light);
+      } else {
+        theme.set(Theme.Dark);
+      }
+    },
     async setApiCredential(
-      event: Event & { currentTarget: HTMLButtonElement },
+      event: Event & { currentTarget: HTMLButtonElement }
     ) {
       event.preventDefault();
 
@@ -48,8 +55,8 @@ function appStore() {
                   secret,
                 },
                 Number(generateUID()),
-                Method.Put,
-              ),
+                Method.Put
+              )
             );
             ready.set(true);
             setupError.set(false);

@@ -329,8 +329,11 @@ function trendMapStore() {
         child.classList.add("pointer-events-none"),
       );
 
-      if (store.get(newPotentialGroupId)!.hidden && get(draggingGroupId) !== newPotentialGroupId) {
-        newPotentialGroup.classList.add("secondary-theme")
+      if (
+        store.get(newPotentialGroupId)!.hidden &&
+        get(draggingGroupId) !== newPotentialGroupId
+      ) {
+        newPotentialGroup.classList.add("secondary-theme");
       }
     },
     handleTickerGroupingDragLeave(
@@ -345,8 +348,11 @@ function trendMapStore() {
       );
 
       // Avoid grouped tickers
-      if (store.get(newPotentialGroupId)!.hidden && get(draggingGroupId) !== newPotentialGroupId) {
-        newPotentialGroup.classList.remove("secondary-theme")
+      if (
+        store.get(newPotentialGroupId)!.hidden &&
+        get(draggingGroupId) !== newPotentialGroupId
+      ) {
+        newPotentialGroup.classList.remove("secondary-theme");
       }
     },
     handleTickerGroupingDrop(
@@ -382,8 +388,8 @@ function trendMapStore() {
         // Update new group persistently
         const newGroup = store.get(newGroupId)!;
         newGroup.tickers.push(ticker);
-         // Set group as active to keep wrapping
-        newGroup.hidden = false
+        // Set group as active to keep wrapping
+        newGroup.hidden = false;
         store.set(newGroupId, newGroup);
 
         // The drop will lag and thinking a ticker is still in group

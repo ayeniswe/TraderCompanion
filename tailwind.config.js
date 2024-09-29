@@ -29,6 +29,12 @@ export default {
             backgroundPosition: "1000px 0",
           },
         },
+        ".gradient-dark": {
+          background: "linear-gradient(to right, #000 50%, #fff 50%)",
+        },
+        ".gradient-light": {
+          background: "linear-gradient(to right, #fff 50%, #000 50%)",
+        },
       });
     },
   ],

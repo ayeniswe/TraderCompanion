@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { trendMap } from '../../store';
+	import { app, trendMap } from '../../store';
 	import { listen_get_layout, get_layout } from '../../api/trendmap/get_layout';
 	import { listen_ticker, send } from '../../api/trendmap/tickers';
 	import { Method, RPCRequest, Version } from '../../api/model';
 	import { generateUID } from '../../lib';
 	import { get } from 'svelte/store';
+	import { Theme } from '../../store/app/model';
 
 	const {
 		store,
@@ -33,6 +34,7 @@
 		handleTickerGroupingDrop,
 		validateGroupInput
 	} = trendMap;
+	const { changeTheme, theme } = app
 	onMount(() => {
 		// Start internal api routes
 		let unlisten_tickers = listen_ticker();
@@ -179,4 +181,9 @@
 			>+ New</button
 		>
 	{/if}
+	<button
+		on:click={changeTheme}
+		class="absolute top-0 m-6 z-20 w-4 h-4 rounded-full transition-all duration-200 {$theme === Theme.Light ?"gradient-light" : "gradient-dark"}"
+		></button
+	>
 </div>

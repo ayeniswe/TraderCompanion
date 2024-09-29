@@ -43,7 +43,7 @@ function listen_ticker() {
 
         closeAddTickerDialog();
       } else {
-        store.pop() // revert new potential group
+        store.pop(); // revert new potential group
         errorMessage.set(event.payload.error.message);
       }
 
