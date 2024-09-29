@@ -68,7 +68,7 @@ jobs:
       
       - name: Download SQLite Binary
         run: |
-          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip
+          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
           tar -xf sqlite-dll-win-x64-3460100.zip
           move sqlite-dll-win-x64-3460100/* ./sqlite3
 
