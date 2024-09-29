@@ -70,11 +70,14 @@ jobs:
         run: |
          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
          tar -xf sqlite-dll-win-x64-3460100.zip
-
+     
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+     
       - name: Build SQLite3 .lib
         run: |
-         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat"
          cd sqlite-dll-win-x64-3460100
+         VsDevCmd.bat
          lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
          
       - name: Set environment variables for SQLite3
