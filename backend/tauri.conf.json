@@ -28,7 +28,7 @@
         "assets/icon.icns",
         "assets/icon.ico"
       ],
-      "resources": ["app.db"],
+      "resources": ["./app.db"],
       "targets": ["nsis","deb","rpm","appimage"],
       "windows": {
         "nsis": {

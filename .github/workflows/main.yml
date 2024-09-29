@@ -46,9 +46,9 @@ jobs:
         with:
           name: artifacts
           path: |
-            ./src-tauri/target/release/bundle/deb/*
-            ./src-tauri/target/release/bundle/rpm/*
-            ./src-tauri/target/release/bundle/appimage/*
+            ./target/release/bundle/deb/*
+            ./target/release/bundle/rpm/*
+            ./target/release/bundle/appimage/*
 
   build-windows:
     runs-on: windows-latest
@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
-          path: ./src-tauri/target/release/bundle/nsis/*
+          path: ./target/release/bundle/nsis/*
 
   release:
     runs-on: ubuntu-latest
