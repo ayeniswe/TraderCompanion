@@ -5,13 +5,9 @@ on:
     tags:
       - "*" # This triggers on any tag push
 
-stages:
-  - build
-
 jobs:
   # Linux Build Job
   build-linux:
-    stage: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -53,7 +49,6 @@ jobs:
           path: ./src-tauri/target/release/bundle/
 
   build-windows:
-    stage: build
     runs-on: windows-latest
     steps:
       - name: Checkout code
