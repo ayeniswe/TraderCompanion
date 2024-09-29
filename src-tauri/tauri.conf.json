@@ -29,7 +29,7 @@
         "assets/icon.ico"
       ],
       "resources": ["app.db"],
-      "targets": "nsis",
+      "targets": ["nsis","deb","rpm","appimage"],
       "windows": {
         "nsis": {
           "installerIcon": "assets/icon.ico",
@@ -37,6 +37,15 @@
           "sidebarImage": "assets/sidebar.bmp",
           "license": "assets/license.txt"
         }
+      },
+      "deb": {
+        "depends": ["libgtk-3-0","libsqlite3-0"],
+        "files": ["app.db"],
+        "section": "misc",
+      },
+      "rpm": {
+        "depends": ["libgtk-3.so.0","sqlite-libs"],
+        "files": ["app.db"],
       }
     },
     "security": {
