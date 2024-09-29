@@ -75,6 +75,7 @@ jobs:
 
       - name: Build Sqlite lib
         run: |
+          ls -l
           lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
 
       - name: Set environment variables for SQLite3
