@@ -4,11 +4,14 @@ on:
   push:
     tags:
       - "*" # This triggers on any tag push
-  workflow_dispatch: # allow manual trigger
+
+stages:
+  - build
 
 jobs:
   # Linux Build Job
   build-linux:
+    stage: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*" # This always installs the latest LTS
+          node-version: "lts/*"
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -37,7 +40,7 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Startup a Fresh DB (Linux)
+      - name: Startup a Fresh DB
         run: npm run db
 
       - name: Build Tauri App
@@ -47,9 +50,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tauri-linux-build
-          path: ./src-tauri/target/release/bundle/ # Adjust this path to your Tauri Linux output folder
+          path: ./src-tauri/target/release/bundle/
 
   build-windows:
+    stage: build
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -58,7 +62,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*" # This always installs the latest LTS version
+          node-version: "lts/*"
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -78,10 +82,11 @@ jobs:
         run: |
           lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
 
-      # - name: Set environment variables for SQLite3
-      #   run: |
-      #     set PATH="%cd%;%PATH%"
-      #     set LIB="%cd%;%LIB%"
+      - name: Set environment variables for SQLite3
+        run: echo "Setting environment variables..."
+        env:
+          PATH: "${{ github.workspace }};${{ env.PATH }}"
+          LIB: "${{ github.workspace }};${{ env.LIB }}"
 
       - name: Install Diesel CLI
         run: cargo install diesel_cli --no-default-features --features sqlite
@@ -89,11 +94,14 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Build Tauri App (Windows)
+      - name: Startup a Fresh DB
+        run: npm run db
+
+      - name: Build Tauri App
         run: npm run app:build
 
       - name: Upload Windows Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: tauri-windows-build
-          path: ./src-tauri/target/release/bundle/ # Adjust this path to your Tauri Windows output folder
+          path: ./src-tauri/target/release/bundle/
