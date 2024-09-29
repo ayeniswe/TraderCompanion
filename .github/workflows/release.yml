@@ -65,23 +65,22 @@ jobs:
         with:
           toolchain: stable
           override: true
-      
+          
       - name: Download SQLite Binary
         run: |
-          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
-          tar -xf sqlite-dll-win-x64-3460100.zip
-          move sqlite-dll-win-x64-3460100/* ./sqlite3
+         curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
+         tar -xf sqlite-dll-win-x64-3460100.zip
 
       - name: Build SQLite3 .lib
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat"
-          cd sqlite3
-          lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
-      
+         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat"
+         cd sqlite-dll-win-x64-3460100
+         lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
+         
       - name: Set environment variables for SQLite3
         run: |
-          setx PATH "C:\sqlite3;%PATH%"
-          setx LIB "C:\sqlite3;%LIB%"
+          set PATH="%cd%\sqlite-dll-win-x64-3460100;%PATH%"
+          set LIB="%cd%\sqlite-dll-win-x64-3460100;%LIB%"
       
       - name: Install Diesel CLI
         run: cargo install diesel_cli --no-default-features --features sqlite
