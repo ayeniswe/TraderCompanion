@@ -45,7 +45,8 @@
       },
       "rpm": {
         "depends": ["libgtk-3.so.0","sqlite-libs"],
-        "files": ["app.db"]
+        "files": ["app.db"],
+        "release": "1"
       }
     },
     "security": {
