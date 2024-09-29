@@ -1,12 +1,13 @@
 interface Group {
   name: string;
-  id: number;
+  id: number; // for access in array
+  hidden: boolean;
   tickers: Ticker[];
 }
 
 interface Ticker {
   name: string;
-  group_id: number;
+  group_id: number; // for access in respective group
   long_term: Trend;
   mid_term: Trend;
   short_term: Trend;

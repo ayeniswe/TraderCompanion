@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct Group {
     name: String,
     id: u16,
+    hidden: bool,
     tickers: Vec<Ticker>,
 }
 

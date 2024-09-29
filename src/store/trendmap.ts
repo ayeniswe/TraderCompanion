@@ -129,6 +129,7 @@ function trendMapStore() {
         const updatedGroups = get(store).map((group) => {
           const updatedGroup = {
             id: count,
+            hidden: group.hidden,
             name: group.name,
             tickers: group.tickers,
           };
@@ -262,6 +263,7 @@ function trendMapStore() {
         // Create grouping
         store.add({
           name: "",
+          hidden: true,
           id,
           tickers: [],
         });
@@ -320,26 +322,31 @@ function trendMapStore() {
       event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       const newPotentialGroup = event.currentTarget;
+      const newPotentialGroupId = Number(newPotentialGroup.id);
 
       // Children ele will disrupt drag n drop
       Array.from(newPotentialGroup.children).forEach((child) =>
         child.classList.add("pointer-events-none"),
       );
-      if (newPotentialGroup.id !== String(get(draggingGroupId))) {
-        event.currentTarget.classList.add("secondary-theme");
+
+      if (store.get(newPotentialGroupId)!.hidden && get(draggingGroupId) !== newPotentialGroupId) {
+        newPotentialGroup.classList.add("secondary-theme")
       }
     },
     handleTickerGroupingDragLeave(
       event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       const newPotentialGroup = event.currentTarget;
+      const newPotentialGroupId = Number(newPotentialGroup.id);
 
       // Children ele will disrupt drag n drop
       Array.from(newPotentialGroup.children).forEach((child) =>
         child.classList.remove("pointer-events-none"),
       );
-      if (newPotentialGroup.role !== "group") {
-        event.currentTarget.classList.remove("secondary-theme");
+
+      // Avoid grouped tickers
+      if (store.get(newPotentialGroupId)!.hidden && get(draggingGroupId) !== newPotentialGroupId) {
+        newPotentialGroup.classList.remove("secondary-theme")
       }
     },
     handleTickerGroupingDrop(
@@ -375,23 +382,9 @@ function trendMapStore() {
         // Update new group persistently
         const newGroup = store.get(newGroupId)!;
         newGroup.tickers.push(ticker);
+         // Set group as active to keep wrapping
+        newGroup.hidden = false
         store.set(newGroupId, newGroup);
-
-        // All tickers live in their own potential group which will
-        // always be the first element but upon adding to a potential group it will
-        // not be considered as a group but rather groups are valid when atleast a single element
-        // is present
-        if (newGrouping.firstElementChild!.children.length >= 1) {
-          // Show title name for grouping and will always be last child
-          // since a div and input reside in section for holding tickers (<div>) and naming (<input/>)
-          newGrouping.lastElementChild!.classList.remove("hidden");
-
-          // Set group as active to keep wrapping
-          newGrouping.role = "group";
-        } else if (newGrouping.role !== "group") {
-          // Remove grouping box
-          newGrouping.classList.remove("secondary-theme");
-        }
 
         // The drop will lag and thinking a ticker is still in group
         // therefore 1 would represent 0 implying it was 1 ticker in the group before
@@ -404,6 +397,7 @@ function trendMapStore() {
           const updatedGroups = get(store).map((group) => {
             const updatedGroup = {
               id: count,
+              hidden: group.hidden,
               name: group.name,
               tickers: group.tickers,
             };

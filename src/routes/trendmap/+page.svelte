@@ -5,6 +5,7 @@
 	import { listen_ticker, send } from '../../api/trendmap/tickers';
 	import { Method, RPCRequest, Version } from '../../api/model';
 	import { generateUID } from '../../lib';
+	import { get } from 'svelte/store';
 
 	const {
 		store,
@@ -41,7 +42,9 @@
 		get_layout();
 
 		// Fresh update of all ticker
-        send(new RPCRequest(Version.V1, getAllTickers(), generateUID(), Method.Get));
+		if (get(store).length) {
+			send(new RPCRequest(Version.V1, getAllTickers(), generateUID(), Method.Get));
+		}
 		
 		// Start intervals
 		trendMap.startUpdateTrendMap();
@@ -113,10 +116,10 @@
 	<div
 		class="primary-theme w-full h-full border-8 overflow-y-auto p-9 grid grid-cols-10 max-2xl:grid-cols-8 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
 	>
-		{#each $store as {id, name, tickers }}
+		{#each $store as {id, name, tickers, hidden }}
 			<!-- svelte-ignore a11y-no-static-element-interactions (redudant role) -->
 			<section
-				class="h-64 w-44 group select-none p-16 relative rounded-lg transition-all duration-200 flex flex-col items-center gap-1"
+				class="h-64 w-44 group select-none p-16 relative rounded-lg transition-all duration-200 flex flex-col items-center gap-1 {hidden ? "" : "secondary-theme"}"
 				on:dragleave={handleTickerGroupingDragLeave}
 				on:dragenter={handleTickerGroupingDragEnter}
 				on:dragover={handleTickerGroupingDragOver}
@@ -160,10 +163,11 @@
 					on:dblclick={allowGroupNameChange}
 					on:input={(e) => validateGroupInput(id, e)}
 					tabindex="-1"
-					class="hidden bg-transparent-important font-extrabold absolute rounded-sm left-0 top-0 m-4 p-1 w-3/4"
+					class="bg-transparent-important font-extrabold absolute rounded-sm left-0 top-0 m-4 p-1 w-3/4"
 					value={name}
 					placeholder={'Untitled'}
 					readonly
+					hidden={hidden}
 				/>
 			</section>
 		{/each}
