@@ -4,52 +4,96 @@ on:
   push:
     tags:
       - "*"  # This triggers on any tag push
-  workflow_dispatch:  # Allow manual triggering
-
+  workflow_dispatch: # allow manual trigger
+   
 jobs:
-  build:
+  # Linux Build Job
+  build-linux:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js for Tauri
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'
+          node-version: 'lts/*'  # This always installs the latest LTS 
           
-      # Step 3: Install Rust (Tauri needs Rust)
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           components: rustfmt
           override: true
-
-      # Step 4: Install Tauri dependencies (Tauri needs system libraries)
+          
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev libsqlite3-dev librsvg2-dev patchelf
-      
-      # Step 5: Install Diesel CLI
+          sudo apt-get install libwebkit2gtk-4.0-dev libgtksourceview-4-dev libsoup2.4-dev libssl-dev libsqlite3-dev -y
+
       - name: Install Diesel CLI
         run: cargo install diesel_cli --no-default-features --features sqlite
-      
-      # Step 6: Install npm dependencies
+        
       - name: Install npm dependencies
         run: npm install
-
-      # Step 7: Build Tauri app
+     
+      - name: Startup a Fresh DB (Linux)
+        run: npm run db
+        
       - name: Build Tauri App
-        run: npm run release
+        run: npm run app:build
 
-      # Optional: Upload the built Tauri artifacts (e.g., for use in releases)
-      - name: Upload Build Artifacts
+      - name: Upload Linux Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: tauri-build
-          path: ./src-tauri/target/release/bundle/  # Adjust this path to your Tauri output folder
+          name: tauri-linux-build
+          path: ./src-tauri/target/release/bundle/  # Adjust this path to your Tauri Linux output folder
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'  # This always installs the latest LTS version
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Download SQLite Binary
+        run: |
+          curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip
+          tar -xf sqlite-dll-win-x64-3460100.zip
+          move sqlite-dll-win-x64-3460100/* ./sqlite3
+
+      - name: Build SQLite3 .lib
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat"
+          cd sqlite3
+          lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
+      
+      - name: Set environment variables for SQLite3
+        run: |
+          setx PATH "C:\sqlite3;%PATH%"
+          setx LIB "C:\sqlite3;%LIB%"
+      
+      - name: Install Diesel CLI
+        run: cargo install diesel_cli --no-default-features --features sqlite
+
+      - name: Install npm dependencies
+        run: npm install
+ 
+      - name: Build Tauri App (Windows)
+        run: npm run app:build
+
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tauri-windows-build
+          path: ./src-tauri/target/release/bundle/  # Adjust this path to your Tauri Windows output folder
