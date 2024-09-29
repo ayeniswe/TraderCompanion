@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build",
-    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run ui:build",
+    "beforeDevCommand": "npm run ui",
     "devPath": "http://localhost:5173",
     "distDir": "../build"
   },
@@ -17,34 +17,26 @@
     "bundle": {
       "active": true,
       "category": "Finance",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
+      "copyright": "Samson O. Ayeni",
       "identifier": "com.samson.tradercompanion",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
+      "longDescription": "TraderCompanion is a powerful application designed to enhance your trading experience. Whether you're a novice or an experienced trader, TraderCompanion provides you with the tools you need to make informed decisions and optimize your trading strategies",
+      "shortDescription": "Your Ultimate Trading Assistant",
+      "icon": [
+        "assets/32x32.png",
+        "assets/128x128.png",
+        "assets/128x128@2x.png",
+        "assets/icon.icns",
+        "assets/icon.ico"
+      ],
+      "resources": ["app.db"],
+      "targets": "nsis",
       "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "nsis": {
+          "installerIcon": "assets/icon.ico",
+          "headerImage": "assets/header.bmp",
+          "sidebarImage": "assets/sidebar.bmp",
+          "license": "assets/license.txt"
+        }
       }
     },
     "security": {

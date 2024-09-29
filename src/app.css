@@ -11,6 +11,9 @@
   .accent-theme {
     @apply hover:bg-gray-500;
   }
+  .logo-theme {
+    @apply bg-black;
+  }
   .secondary-theme {
     @apply bg-gray-500;
     @apply text-black;
@@ -38,6 +41,9 @@
     @apply bg-gray-800;
     @apply text-slate-200;
     @apply border-black;
+  }
+  .logo-theme {
+    @apply bg-slate-200;
   }
   .secondary-theme {
     @apply bg-gray-900;

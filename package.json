@@ -1,19 +1,16 @@
 {
   "name": "TraderCompanion",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "npm run test:integration && npm run test:unit",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "ui": "vite dev",
+    "ui:build": "vite build",
+    "ui:preview": "vite preview",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "test:integration": "playwright test",
-    "test:unit": "vitest",
-    "tauri": "tauri"
+    "app": "tauri dev",
+    "db": "diesel database reset --migration-dir=src-tauri/migrations --database-url=src-tauri/app.db",
+    "release": "npm run db && tauri build"
   },
   "devDependencies": {
     "@playwright/test": "^1.28.1",

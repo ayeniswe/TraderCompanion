@@ -31,11 +31,17 @@
 				bind:this={$setupForm}
 				class="secondary-theme rounded-lg flex flex-col items-center justify-center w-96 h-80 gap-4"
 			>
-				<img
-					width="100px"
-					src={$theme === Theme.Dark ? 'dark-logo.png' : 'light-logo.png'}
-					alt="robot with arms raised high and title below displaying 'Trader Companion'"
-				/>
+				<div class="flex flex-col items-center">
+					<img
+						width="75px"
+						src={'logo.png'}
+						alt="robot with arms raised high and title below displaying 'Trader Companion'"
+					/>
+					<div class="flex flex-col items-center">
+						<h1 class="text-3xl font-bold">T R A D E R</h1>
+						<h2 class="text-xl flex justify-center items-center gap-1">Com<span class="w-2 h-2 rounded-full relative top-0.5 logo-theme"></span>pan<span class="w-2 h-2 rounded-full relative top-0.5 logo-theme"></span>ion</h2>
+					</div>
+				</div>
 				<fieldset class="flex flex-col w-3/5 gap-3">
 					<input
 						name="alpaca-key"
