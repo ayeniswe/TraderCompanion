@@ -28,6 +28,13 @@ function createArrayStore<T>() {
     clear() {
       set([]);
     },
+    pop() {
+      update((array) => {
+        const newArray = [...array];
+        newArray.pop();
+        return newArray;
+      });
+    },
     get(idx: number) {
       let value: T | undefined;
       subscribe((array) => {
