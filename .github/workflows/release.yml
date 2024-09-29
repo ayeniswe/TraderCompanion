@@ -71,8 +71,10 @@ jobs:
           curl -L https://www.sqlite.org/2024/sqlite-dll-win-x64-3460100.zip -o sqlite-dll-win-x64-3460100.zip
           unzip sqlite-dll-win-x64-3460100.zip
 
-      - name: Build Sqlite lib
+      - name: Setup MSVC tools
         uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build Sqlite lib
         run: |
           lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
 
