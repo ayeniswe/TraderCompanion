@@ -134,7 +134,7 @@ jobs:
           RELEASE_ID=$(echo "$response" | jq -r '.id')
 
           # Define an array of artifacts
-          file_paths=(
+          file_patterns=(
             "./deb/*.deb"
             "./rpm/*.rpm"
             "./appimage/*.AppImage"
