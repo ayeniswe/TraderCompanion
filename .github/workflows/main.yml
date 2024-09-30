@@ -46,9 +46,9 @@ jobs:
         with:
           name: artifacts
           path: |
-            ./target/release/bundle/deb/*
-            ./target/release/bundle/rpm/*
-            ./target/release/bundle/appimage/*
+            ./target/release/bundle/deb/*.deb
+            ./target/release/bundle/rpm/*.rpm
+            ./target/release/bundle/appimage/*.AppImage
 
   build-windows:
     runs-on: windows-latest
@@ -117,7 +117,7 @@ jobs:
         run: |
           REPO="ayeniswe/TraderCompanion"
           TAG=v$(jq -r '.version' package.json)
-          APP=v$(jq -r '.name' package.json)
+          APP=$(jq -r '.name' package.json)
           GITHUB_TOKEN="${{ secrets.TRADERCOMPANION }}"
 
           # Create a release
@@ -134,13 +134,17 @@ jobs:
 
           # Find all files in the downloaded artifacts and upload
           for file in ./artifacts/*; do
-            # Upload each file to the release
-            curl -L \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              -H "Content-Type: application/octet-stream" \
-              "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$(basename "$file")'" \
-              --data-binary "@$file"
+            if [ -s "$file" ]; then
+              response=$(curl -L \
+                -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: $GITHUB_TOKEN" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                -H "Content-Type: application/octet-stream" \
+                "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$(basename "$file")" \
+                --data-binary "@$file")
+              echo "Uploaded $file: $response"
+            else
+              echo "Skipping empty file: $file"
+            fi
           done
