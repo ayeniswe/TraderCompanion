@@ -148,11 +148,11 @@ jobs:
 
           # Define an array of artifacts
           file_patterns=(
-            "./bundle/deb/*.deb"
-            "./bundle/rpm/*.rpm"
-            "./bundle/appimage/*.AppImage",
-            "./bundle/*.zip",
-            "./bundle/nsis/*.exe"
+            "./deb/*.deb"
+            "./rpm/*.rpm"
+            "./appimage/*.AppImage",
+            "./*.zip",
+            "./nsis/*.exe"
           )
 
           # Loop through each pattern in the array
