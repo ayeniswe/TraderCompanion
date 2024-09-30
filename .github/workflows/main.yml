@@ -45,10 +45,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
-          path: |
-            ./target/release/bundle/deb
-            ./target/release/bundle/rpm
-            ./target/release/bundle/appimage
+          path: ./target/release/bundle
 
   build-windows:
     runs-on: windows-latest
@@ -102,10 +99,10 @@ jobs:
           $exeFile = Get-ChildItem -Path "./target/release/" -Filter "*.exe" | Select-Object -First 1
 
           # Define the output zip file name based on the .exe file name
-          $zipFileName = [System.IO.Path]::ChangeExtension($exeFile.FullName, ".zip")
+          $zipFileName = [System.IO.Path]::ChangeExtension($exeFile.Name, ".zip")
           
           # Create the zip file
-          Compress-Archive -Path @($exeFile.FullName, "./target/release/app.db") -DestinationPath $zipFileName -CompressionLevel Fastest
+          Compress-Archive -Path @($exeFile.FullName, "./target/release/app.db") -DestinationPath ./target/release/bundle/$zipFileName -CompressionLevel Fastest
           
           Write-Host "Zipped files into $zipFileName"
 
@@ -113,9 +110,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
-          path: |
-            ./target/release/*.zip
-            ./target/release/bundle/nsis/*
+          path: ./target/release/bundle
 
   release:
     runs-on: ubuntu-latest
@@ -149,13 +144,15 @@ jobs:
           # Extract the release ID from the response
           RELEASE_ID=$(echo "$response" | jq -r '.id')
 
+          echo ls -la
+
           # Define an array of artifacts
           file_patterns=(
-            "./deb/*.deb"
-            "./rpm/*.rpm"
-            "./appimage/*.AppImage",
-            "*.zip",
-            "*.exe"
+            "./bundle/deb/*.deb"
+            "./bundle/rpm/*.rpm"
+            "./bundle/appimage/*.AppImage",
+            "./bundle/*.zip",
+            "./bundle/nsis/*.exe"
           )
 
           # Loop through each pattern in the array
