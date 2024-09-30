@@ -114,8 +114,8 @@ jobs:
         with:
           name: artifacts
           path: |
-          ./target/release/*.zip
-          ./target/release/bundle/nsis/*
+            ./target/release/*.zip
+            ./target/release/bundle/nsis/*
 
   release:
     runs-on: ubuntu-latest
