@@ -112,6 +112,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifacts
+          path: .
 
       - name: Create GitHub release
         run: |
@@ -131,6 +132,10 @@ jobs:
 
           # Extract the release ID from the response
           RELEASE_ID=$(echo "$response" | jq -r '.id')
+
+          echo "Contents of ./artifacts:"
+          ls -la 
+          ls -la ./artifacts
 
           # Find all files in the downloaded artifacts and upload
           for file in ./artifacts/*; do
