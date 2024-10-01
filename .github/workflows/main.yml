@@ -109,7 +109,7 @@ jobs:
           # Create the zip file
           Compress-Archive -Path @($exeFile.FullName, "./target/release/app.db") -DestinationPath ./target/release/bundle/$zipFileName -CompressionLevel Fastest
           
-          ls -ls ./target/release/bundle
+          dir ./target/release/bundle
           Write-Host "Zipped files into $zipFileName"
       
       - name: Find and copy .zip and .exe files
