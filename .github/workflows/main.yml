@@ -114,8 +114,8 @@ jobs:
       
       - name: Find and copy .zip and .exe files
         run: |
+          New-Item -Path "./artifacts" -ItemType Directory
           Get-ChildItem -Path ./target/release/bundle -Recurse -Include *.zip, *.exe | ForEach-Object {
-            Write-Host "Copying $_.FullName to ./artifacts"
             Copy-Item $_.FullName -Destination ./artifacts
           }
           
