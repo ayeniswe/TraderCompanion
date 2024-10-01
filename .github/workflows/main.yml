@@ -116,6 +116,8 @@ jobs:
           Get-ChildItem -Path ./target/release/bundle -Recurse -Include *.zip, *.exe | ForEach-Object {
             Copy-Item $_.FullName -Destination ./artifacts
           }
+          ls -la ./target/release/bundle
+          ls -la ./artifacts
           
       - name: Upload Windows Build Artifacts
         uses: actions/upload-artifact@v4
@@ -131,13 +133,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: windows
           path: .
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux
           path: .
