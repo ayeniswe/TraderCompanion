@@ -40,12 +40,17 @@ jobs:
 
       - name: Build Tauri App
         run: npm run app:build
+        
+      - name: Find and bundle artifacts
+        run: |
+          mkdir -p artifacts
+          find ./target/release/bundle -type f \( -name "*.rpm" -o -name "*.deb" -o -name "*.AppImage" \) -exec cp {} ./artifacts \;
 
       - name: Upload Linux Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: artifacts
-          path: ./target/release/bundle
+          name: linux
+          path: ./artifacts
 
   build-windows:
     runs-on: windows-latest
@@ -105,12 +110,18 @@ jobs:
           Compress-Archive -Path @($exeFile.FullName, "./target/release/app.db") -DestinationPath ./target/release/bundle/$zipFileName -CompressionLevel Fastest
           
           Write-Host "Zipped files into $zipFileName"
-
+      
+      - name: Find and copy .zip and .exe files
+        run: |
+          Get-ChildItem -Path ./target/release/bundle -Recurse -Include *.zip, *.exe | ForEach-Object {
+            Copy-Item $_.FullName -Destination ./artifacts
+          }
+          
       - name: Upload Windows Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: artifacts
-          path: ./target/release/bundle
+          name: windows
+          path: ./artifacts
 
   release:
     runs-on: ubuntu-latest
@@ -144,33 +155,38 @@ jobs:
           # Extract the release ID from the response
           RELEASE_ID=$(echo "$response" | jq -r '.id')
 
-          echo ls -la
+          ls -la
+          ls linux/artifacts
+          ls windows/artifacts
 
-          # Define an array of artifacts
-          file_patterns=(
-            "./deb/*.deb"
-            "./rpm/*.rpm"
-            "./appimage/*.AppImage",
-            "./*.zip",
-            "./nsis/*.exe"
-          )
+          # Define an array of artifact directories
+          # Define an array of artifact directories
+artifact_dirs=(
+  "./linux/artifacts"
+  "./windows/artifacts"
+)
 
-          # Loop through each pattern in the array
-          for pattern in "${file_patterns[@]}"; do
-            # Expand the pattern to find matching files
-            for file_path in $pattern; do
-              if [ -f "$file_path" ] && [ -s "$file_path" ]; then
-                response=$(curl -L \
-                  -X POST \
-                  -H "Accept: application/vnd.github+json" \
-                  -H "Authorization: Bearer $GITHUB_TOKEN" \
-                  -H "X-GitHub-Api-Version: 2022-11-28" \
-                  -H "Content-Type: application/octet-stream" \
-                  "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$(basename "$file_path")" \
-                  --data-binary "@$file_path")
-                echo "Uploaded $file_path: $response"
-              else
-                echo "Skipping empty or non-existent file: $file_path"
-              fi
-            done
-          done
+# Loop through each directory in the array
+for dir in "${artifact_dirs[@]}"; do
+  # Loop through all files in each directory
+  for file_path in "$dir"/*; do
+    if [ -f "$file_path" ] && [ -s "$file_path" ]; then
+      # Get the file name
+      file_name=$(basename "$file_path")
+      
+      # Upload the file to GitHub release
+      response=$(curl -L \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -H "Content-Type: application/octet-stream" \
+        "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$file_name" \
+        --data-binary "@$file_path")
+      
+      echo "Uploaded $file_path: $response"
+    else
+      echo "Skipping empty or non-existent file: $file_path"
+    fi
+  done
+done
