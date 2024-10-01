@@ -109,15 +109,15 @@ jobs:
           # Create the zip file
           Compress-Archive -Path @($exeFile.FullName, "./target/release/app.db") -DestinationPath ./target/release/bundle/$zipFileName -CompressionLevel Fastest
           
+          ls -ls ./target/release/bundle
           Write-Host "Zipped files into $zipFileName"
       
       - name: Find and copy .zip and .exe files
         run: |
           Get-ChildItem -Path ./target/release/bundle -Recurse -Include *.zip, *.exe | ForEach-Object {
+            Write-Host "Copying $_.FullName to ./artifacts"
             Copy-Item $_.FullName -Destination ./artifacts
           }
-          ls -la ./target/release/bundle
-          ls -la ./artifacts
           
       - name: Upload Windows Build Artifacts
         uses: actions/upload-artifact@v4
