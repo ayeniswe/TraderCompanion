@@ -59,7 +59,7 @@ https://github.com/user-attachments/assets/628be68d-8bd7-4adc-afb5-297598cb1778
 4. Enter your **Secret Key** into the second input box.
 5. If the activation screen goes away you have now finish activation and may move to the **Usage Guide**
 
-## Usage Guide
+## 📖Usage Guide
 
 ### **Ticker Trend Overview**
 
