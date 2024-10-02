@@ -63,7 +63,6 @@ https://github.com/user-attachments/assets/628be68d-8bd7-4adc-afb5-297598cb1778
 
 ### **Ticker Trend Overview**
 
-**Overview**
 This app provides a quick, at-a-glance representation of the trends for any stock ticker in three different time frames: **Long-term**, **Medium-term**, and **Short-term**. The trends are visualized using icons composed of three circles, each representing one of the time frames.
 
 #### **Icons and Color Representation**
@@ -95,7 +94,7 @@ The icon consists of **three circles** in the following order:
    - **Green-Green-Red**: Long-term and medium-term trends are upward, but there might be a short-term dip. This is usually considered an optimal setup.
    - **Other combinations**: Use the color indicators to judge whether the stock is in an uptrend, downtrend, or range in different time periods.
 
-**Example**
+**Legend**
 | **Icon**  | **Explanation** |
 | -------- | --------------- |
 | 🟢 🟢 🔴  | **Ideal Scenario** - Long-term and medium-term trends are up, short-term correction. |
