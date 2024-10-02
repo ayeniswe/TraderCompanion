@@ -1,6 +1,6 @@
 <div align="center">
-
-![logo](https://github.com/user-attachments/assets/68fe5864-fc35-4238-bf2a-2687439a0cc3)
+  
+![128x128@2x](https://github.com/user-attachments/assets/2eea4ecf-e9b8-4ca3-a837-f460eda70ebc)
 <div id="user-content-toc">
   <ul style="list-style: none;">
     <summary>
@@ -11,7 +11,8 @@
 </div>
 
 ## 🎉 Demo
-https://github.com/user-attachments/assets/5e34ef9c-afc8-4066-84b0-6a31c271ed66
+
+https://github.com/user-attachments/assets/628be68d-8bd7-4adc-afb5-297598cb1778
 
 ## ✅ Getting Started
 
