@@ -44,16 +44,15 @@ https://github.com/user-attachments/assets/628be68d-8bd7-4adc-afb5-297598cb1778
 
 ## Step 3: Activate TraderCompanion
 
-1. Install/Open the application 
+1. Install/Open the application
 
    > **Important:** If you prefer not to install the application on your device, we offer standalone options:
-   > 
+   >
    > - **Linux**: Use the `.appimage` file
    > - **Windows**: Use the `.zip` file
-   > 
    >
    > This allows you to run the application without needing a full installation!
-   
+
 2. Wait for activation screen to show
 3. Enter your **API Key** into the first input box.
 4. Enter your **Secret Key** into the second input box.
@@ -70,17 +69,20 @@ This app provides a quick, at-a-glance representation of the trends for any stoc
 The icon consists of **three circles** in the following order:
 
 **Icon Explanation**
+
 1. **Left Circle**: Long-term trend
 2. **Middle Circle**: Medium-term trend
 3. **Right Circle**: Short-term trend
 
 **Colors Explanation**
+
 - **Green**: The trend is **upward** (bullish).
 - **Red**: The trend is **downward** (bearish).
 - **Yellow**: The trend is in a **range** (neutral or sideways movement).
 - **White**: The trend is **unknown** (insufficient data or indeterminate).
 
 #### **Ideal Scenario**
+
 - The ideal combination to look for is: **Green - Green - Red**.
   - **Long-term (green)**: The stock is trending upward in the long run.
   - **Medium-term (green)**: The stock continues its upward trend in the medium run.
@@ -90,17 +92,18 @@ The icon consists of **three circles** in the following order:
 
 1. **Select the Ticker**: Select `+ New` enter the stock ticker symbol you want to analyze.
 2. **Review the Icon**: The app will generate an icon with the color-coded trends for the three trend terms.
-3. **Interpret the Trends**: 
+3. **Interpret the Trends**:
    - **Green-Green-Red**: Long-term and medium-term trends are upward, but there might be a short-term dip. This is usually considered an optimal setup.
    - **Other combinations**: Use the color indicators to judge whether the stock is in an uptrend, downtrend, or range in different time periods.
 
 **Legend**
-| **Icon**  | **Explanation** |
+| **Icon** | **Explanation** |
 | -------- | --------------- |
-| 🟢 🟢 🔴  | **Ideal Scenario** - Long-term and medium-term trends are up, short-term correction. |
-| 🟡 🔴 🟢  | Long-term in range, medium-term downtrend, short-term uptrend. |
-| 🔴 🔴 🟡  | Bearish in both long-term and medium-term, neutral short-term movement. |
+| 🟢 🟢 🔴 | **Ideal Scenario** - Long-term and medium-term trends are up, short-term correction. |
+| 🟡 🔴 🟢 | Long-term in range, medium-term downtrend, short-term uptrend. |
+| 🔴 🔴 🟡 | Bearish in both long-term and medium-term, neutral short-term movement. |
 
 #### **Additional Notes**
+
 - **White** circles indicate a lack of data for the corresponding time frame. If the trend is unknown, further analysis or waiting for more data might be necessary.
 - The app automatically updates trend data based on real-time market analysis to keep your insights current.

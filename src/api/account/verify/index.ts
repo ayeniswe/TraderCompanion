@@ -6,7 +6,7 @@ import { app } from "../../../store";
 /**
  * Listen for response to `account/verify` route
  */
-function listen() {
+function listen_verify() {
   const { ready } = app;
 
   return tauriListener(
@@ -26,4 +26,4 @@ function send() {
   emit("account/verify");
 }
 
-export { send, listen };
+export { send, listen_verify };

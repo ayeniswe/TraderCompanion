@@ -1,6 +1,6 @@
 import { emit, listen as tauriListener } from "@tauri-apps/api/event";
 import type { Event } from "@tauri-apps/api/event";
-import { Method, RPCRequest, RPCResponse, Version } from "../../model";
+import { RPCRequest, RPCResponse, Version } from "../../model";
 import { type Ticker } from "../model";
 import { trendMap } from "../../../store";
 import { get } from "svelte/store";
@@ -37,9 +37,7 @@ function listen_ticker() {
         // Updates all tickers that changed
         store.restore(updatedGroups);
 
-        save_layout(
-          new RPCRequest(Version.V1, get(store), generateUID(), Method.Put),
-        );
+        save_layout(new RPCRequest(Version.V1, get(store), generateUID()));
 
         closeAddTickerDialog();
       } else {
@@ -48,7 +46,7 @@ function listen_ticker() {
       }
 
       loading.set(false);
-    },
+    }
   );
 }
 

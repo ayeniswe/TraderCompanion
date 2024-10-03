@@ -3,7 +3,7 @@
 	import { app, trendMap } from '../../store';
 	import { listen_get_layout, get_layout } from '../../api/trendmap/get_layout';
 	import { listen_ticker, send } from '../../api/trendmap/tickers';
-	import { Method, RPCRequest, Version } from '../../api/model';
+	import { RPCRequest, Version } from '../../api/model';
 	import { generateUID } from '../../lib';
 	import { get } from 'svelte/store';
 	import { Theme } from '../../store/app/model';
@@ -45,7 +45,7 @@
 
 		// Fresh update of all ticker
 		if (get(store).length) {
-			send(new RPCRequest(Version.V1, getAllTickers(), generateUID(), Method.Get));
+			send(new RPCRequest(Version.V1, getAllTickers(), generateUID()));
 		}
 		
 		// Start intervals
