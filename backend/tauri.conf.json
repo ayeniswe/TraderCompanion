@@ -28,15 +28,8 @@
         "assets/icon.icns",
         "assets/icon.ico"
       ],
-      "resources": [
-        "app.db"
-      ],
-      "targets": [
-        "nsis",
-        "deb",
-        "rpm",
-        "appimage"
-      ],
+      "resources": ["app.db"],
+      "targets": ["nsis", "deb", "rpm", "appimage"],
       "windows": {
         "nsis": {
           "installerIcon": "assets/icon.ico",
@@ -46,15 +39,11 @@
         }
       },
       "deb": {
-        "depends": [
-          "libsqlite3-0"
-        ],
+        "depends": ["libsqlite3-0"],
         "section": "misc"
       },
       "rpm": {
-        "depends": [
-          "sqlite-libs"
-        ],
+        "depends": ["sqlite-libs"],
         "release": "1"
       }
     },

@@ -11,15 +11,15 @@ enum Method {
 
 class RPCRequest<T> {
   version: Version;
-  method: Method;
+  // method: Method;
   payload: T;
   id: number;
 
-  constructor(version: Version, payload: T, id: number, method: Method) {
+  constructor(version: Version, payload: T, id: number /*method: Method*/) {
     this.id = id;
     this.version = version;
     this.payload = payload;
-    this.method = method;
+    // this.method = method;
   }
 }
 
@@ -47,4 +47,4 @@ class RPCError {
   }
 }
 
-export { RPCError, RPCRequest, RPCResponse, Method, Version };
+export { RPCError, RPCRequest, RPCResponse, Version };

@@ -28,12 +28,12 @@ impl std::fmt::Display for Method {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RPCError {
-    pub code: u32,
+    pub code: i32,
     pub message: String,
 }
 
 impl RPCError {
-    pub fn new(message: String, code: u32) -> Self {
+    pub fn new(message: String, code: i32) -> Self {
         RPCError { code, message }
     }
 }
@@ -41,16 +41,16 @@ impl RPCError {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RPCRequest<T> {
     pub version: Version,
-    pub method: Method,
+    // pub method: Method,
     pub payload: T,
     pub id: UID,
 }
 
 impl<T> RPCRequest<T> {
-    pub fn new(version: Version, payload: T, id: UID, method: Method) -> Self {
+    pub fn new(version: Version, payload: T, id: UID /*method: Method*/) -> Self {
         RPCRequest {
             version,
-            method,
+            // method,
             payload,
             id,
         }

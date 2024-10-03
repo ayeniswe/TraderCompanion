@@ -1,23 +1,26 @@
 <script>
 	import { onMount } from 'svelte';
 	import '../app.css';
-	import Trend from './trendmap/+page.svelte';
+	import Trendmap from './trendmap/+page.svelte';
 	import { app } from '../store';
 	import { Theme } from '../store/app/model';
-	import { listen, send } from '../api/account/verify';
+	import { listen_verify, send } from '../api/account/verify';
+	import { listen_create_api_credential } from '../api/account/create_api_credentials';
 
-	const { theme, ready, setupForm, setupError, loading, setApiCredential } = app;
+	const { theme, ready, setupForm, errorMessage, loading, setApiCredential } = app;
 
 	onMount(() => {
 		// Start internal api routes
-		let unlisten = listen();
+		let unlisten_verify = listen_verify();
+		let unlisten_create_api_credential = listen_create_api_credential();
 
 		// Check credentials
 		send();
 
 		// Cleanup on component unmount
 		return async () => {
-			(await unlisten)();
+			(await unlisten_verify)();
+			(await unlisten_create_api_credential)();
 		};
 	});
 </script>
@@ -44,21 +47,23 @@
 				</div>
 				<fieldset class="flex flex-col w-3/5 gap-3">
 					<input
+						disabled={$loading}
 						name="alpaca-key"
 						placeholder="Alpaca API Key"
-						class="p-1 w-full {$setupError
+						class="p-1 w-full {$errorMessage !== ""
 							? 'border-red-important'
 							: ''} rounded-md border text-sm font-normal transition-all focus:duration-0"
 					/>
 					<input
+						disabled={$loading}
 						name="alpaca-secret"
 						placeholder="Alpaca Secret Key"
-						class="p-1 w-full {$setupError
+						class="p-1 w-full {$errorMessage !== ""
 							? 'border-red-important'
 							: ''} rounded-md border text-sm font-normal transition-all focus:duration-0"
 					/>
-					{#if $setupError}
-						<p class="text-xs text-red-600">API credentials are incorrect</p>
+					{#if $errorMessage !== ""}
+						<p class="text-xs text-red-600 flex items-center gap-1"><img width="12" alt="error sign" src={'error.png'}/>{$errorMessage}</p>
 					{/if}
 				</fieldset>
 				{#if !$loading}
@@ -73,7 +78,7 @@
 			</form>
 		</div>
 	{:else}
-		<Trend />
+		<Trendmap />
 	{/if}
 </div>
 <!-- <slot /> -->
