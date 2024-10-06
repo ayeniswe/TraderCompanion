@@ -46,16 +46,16 @@ pub struct RPCRequest<T> {
     pub id: UID,
 }
 
-impl<T> RPCRequest<T> {
-    pub fn new(version: Version, payload: T, id: UID /*method: Method*/) -> Self {
-        RPCRequest {
-            version,
-            // method,
-            payload,
-            id,
-        }
-    }
-}
+// impl<T> RPCRequest<T> {
+//     pub fn new(version: Version, payload: T, id: UID /*method: Method*/) -> Self {
+//         RPCRequest {
+//             version,
+//             // method,
+//             payload,
+//             id,
+//         }
+//     }
+// }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RPCResponse<T> {

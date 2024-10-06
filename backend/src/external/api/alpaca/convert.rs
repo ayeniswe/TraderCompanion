@@ -3,7 +3,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use std::collections::HashMap;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct Record {
     c: f64,
     h: f64,
@@ -73,9 +73,9 @@ pub fn to_dataframe(json: &str) -> HashMap<String, DataFrame> {
 
 #[cfg(test)]
 mod convert_tests {
-    use std::collections::HashMap;
-    use polars::{frame::DataFrame, prelude::NamedFrom as _, series::Series};
     use crate::external::api::alpaca::convert::to_dataframe;
+    use polars::{frame::DataFrame, prelude::NamedFrom as _, series::Series};
+    use std::collections::HashMap;
 
     #[test]
     fn to_dataframe_vec_test() {
@@ -169,12 +169,7 @@ mod convert_tests {
         }"#;
 
         let expected_df = DataFrame::new(vec![
-            Series::new(
-                "date",
-                vec![
-                    "2024-09-03T04:00:00Z"
-                ],
-            ),
+            Series::new("date", vec!["2024-09-03T04:00:00Z"]),
             Series::new("open", vec![228.55]),
             Series::new("close", vec![222.77]),
             Series::new("high", vec![229.0]),

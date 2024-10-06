@@ -12,7 +12,6 @@ use app::{
 use polars::export::rayon::iter::IntoParallelRefIterator;
 use polars::export::rayon::iter::ParallelIterator;
 use polars::frame::DataFrame;
-use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use tauri::Manager;
 
