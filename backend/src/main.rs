@@ -17,7 +17,9 @@ async fn main() {
             api::account::create_api_credentials::listen();
             api::account::verify::listen();
 
-            api::trendmap::tickers::listen();
+            api::ticker::get_latest_bars::listen();
+
+            api::trendmap::generate_layout::listen();
             api::trendmap::save_layout::listen();
             api::trendmap::get_layout::listen();
 

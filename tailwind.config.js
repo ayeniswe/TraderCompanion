@@ -13,6 +13,9 @@ export default {
         ".bg-red-important": {
           backgroundColor: "#dc2626 !important",
         },
+        ".bg-blue-600-important": {
+          backgroundColor: "#2563eb !important",
+        },
         ".border-red-important": {
           borderColor: "#dc2626 !important",
         },

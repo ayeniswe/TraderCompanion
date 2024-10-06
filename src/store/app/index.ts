@@ -27,7 +27,7 @@ function appStore() {
       }
     },
     async setApiCredential(
-      event: Event & { currentTarget: HTMLButtonElement }
+      event: Event & { currentTarget: HTMLButtonElement },
     ) {
       event.preventDefault();
 
@@ -43,8 +43,8 @@ function appStore() {
               key,
               secret,
             },
-            Number(generateUID())
-          )
+            Number(generateUID()),
+          ),
         );
       }
     },

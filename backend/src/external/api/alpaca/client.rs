@@ -16,23 +16,29 @@ pub struct Alpaca<'a> {
     config: AlpacaConfig,
 }
 impl<'a> Alpaca<'a> {
-    /// A new configuration builder for `Alpaca` client
+    /// A new configuration builder for the `Alpaca` client.
     ///
-    /// Defaults:
+    /// This function initializes a configuration builder that allows users
+    /// to set custom parameters for the Alpaca client.
     ///
-    /// `feed` - iex
+    /// # Defaults
+    ///
+    /// The builder starts with the following default settings:
+    /// - `feed`: Defaults to "iex".
     pub fn config() -> AlpacaConfigBuilder {
         AlpacaConfigBuilder::new()
     }
 
     /// A new `Alpaca` client
     ///
-    /// Supports multiple client for different data points
-    /// such as streaming, data, and base api usage
+    /// This client supports multiple endpoints for different data points,
+    /// such as streaming data, historical data, and base API usage.
     ///
-    /// If no config is supplied then will use defaults:
+    /// # Arguments
     ///
-    /// `feed` - iex
+    /// * `config`: An optional `AlpacaConfig` object to customize the client settings.
+    /// If no config is supplied, default settings will be used:
+    /// * `auth`: An `Authenticate` object containing authentication information.
     pub fn new(config: Option<AlpacaConfig>, auth: Authenticate) -> Self {
         Self {
             config: config.unwrap_or_default(),
@@ -40,10 +46,13 @@ impl<'a> Alpaca<'a> {
         }
     }
 
-    /// Retrieve history for all symbols
+    /// Fetches historical stock bars for the given symbols and timeframe starting from the specified date.
     ///
-    /// `start` refers to the time to start retrieving data from up
-    /// to the current date
+    /// # Arguments
+    ///
+    /// * `symbols`: A vector of stock symbols to fetch data for.
+    /// * `timeframe`: The timeframe for the historical bars (e.g., daily, hourly).
+    /// * `start`: A string representing the start date in a valid format.
     pub async fn get_historical_bars(
         &self,
         symbols: Vec<String>,
@@ -70,6 +79,32 @@ impl<'a> Alpaca<'a> {
             }
         } else {
             return Err(Error::DateInvalid);
+        }
+    }
+
+    /// Fetches the latest stock bars for the specified symbols.
+    ///
+    /// # Arguments
+    ///
+    /// * `symbols`: A vector of stock symbols to fetch the latest bars for.
+    pub async fn get_latest_bars(
+        &self,
+        symbols: Vec<String>,
+    ) -> Result<HashMap<String, DataFrame>, Error> {
+        let mut params = HashMap::new();
+        params.insert("symbols", symbols.join(","));
+        params.insert("feed", self.config.feed.to_string());
+        match self
+            .data_client
+            .get("stocks/bars/latest", Some(&params))
+            .send()
+            .await
+        {
+            Ok(response) => match response.text().await {
+                Ok(text) => Ok(to_dataframe(&text)),
+                Err(e) => Err(Error::HTTPError(e.to_string())),
+            },
+            Err(e) => Err(Error::HTTPError(e.to_string())),
         }
     }
 }

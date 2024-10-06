@@ -20,7 +20,7 @@ pub fn listen() {
     APP_HANDLE
         .get()
         .unwrap()
-        .listen_global("trendmap/tickers", |event| {
+        .listen_global("trendmap/generate_layout", |event| {
             if let Ok(req) =
                 serde_json::from_str::<RPCRequest<Vec<Ticker>>>(event.payload().unwrap())
             {
@@ -118,10 +118,10 @@ pub fn listen() {
         });
 }
 
-/// Send a response to trendmap/tickers route
+/// Send a response to generate_layout route
 pub fn send(payload: RPCResponse<Vec<Ticker>>) {
     let _ = APP_HANDLE
         .get()
         .unwrap()
-        .emit_all("trendmap/tickers", payload);
+        .emit_all("trendmap/generate_layout", payload);
 }

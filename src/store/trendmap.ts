@@ -1,14 +1,26 @@
 import { generateUID } from "../lib/utils";
 import { writable, get } from "svelte/store";
 import type { Writable } from "svelte/store";
-import { Trend, type Group, type Ticker } from "../api/trendmap/model";
-import { send } from "../api/trendmap/tickers";
+import {
+  Trend,
+  type Group,
+  type Ticker as TrendMapTicker,
+} from "../api/trendmap/model";
+import { type Ticker } from "../api/ticker/model";
+import { generate_layout } from "../api/trendmap/generate_layout";
 import { RPCRequest, Version } from "../api/model";
 import { save_layout } from "../api/trendmap/save_layout";
 import { createArrayStore } from "../lib/utils";
+import { get_latest_bars } from "../api/ticker/get_latest_bars";
 
 function trendMapStore() {
   const store = createArrayStore<Group>();
+  const hotNReadyStore = createArrayStore<Ticker>();
+
+  const hotNReady: Writable<HTMLElement | null> = writable(null);
+  const watchlist: Writable<HTMLElement | null> = writable(null);
+  const selectedTabMenu: Writable<HTMLElement | null> = writable(null);
+
   const loading: Writable<boolean> = writable(false);
   const ticker: Writable<string> = writable("");
   const errorMessage: Writable<string> = writable("");
@@ -20,9 +32,10 @@ function trendMapStore() {
 
   const addTickerDialog: Writable<boolean> = writable(false);
   const deleteTickerDialog: Writable<boolean> = writable(false);
-  const updateShortTrendMap: Writable<number | null> = writable(null);
-  const updateMidTrendMap: Writable<number | null> = writable(null);
-  const updateLongTrendMap: Writable<number | null> = writable(null);
+  const updateShortTerm: Writable<any | null> = writable(null);
+  const updateMidTerm: Writable<any | null> = writable(null);
+  const updateLongTerm: Writable<any | null> = writable(null);
+  const updateLatestPrices: Writable<any | null> = writable(null);
 
   interface DraggableTicker {
     tickerId: string;
@@ -30,7 +43,7 @@ function trendMapStore() {
   }
 
   function getAllTickers() {
-    const tickers: Ticker[] = [];
+    const tickers: TrendMapTicker[] = [];
     get(store).forEach((group) => {
       group.tickers.forEach((value) => {
         tickers.push(value);
@@ -45,20 +58,26 @@ function trendMapStore() {
     errorMessage.set("");
   }
 
+  function timeUntilNextMinute() {
+    const now = new Date();
+    const seconds = 60 - now.getSeconds();
+    const milliseconds = seconds * 1000 - now.getMilliseconds();
+    return milliseconds;
+  }
+
   function timeUntilNextHour() {
     const now = new Date();
     const nextHour = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
-      now.getHours() + 1
+      now.getHours() + 4,
     );
     return nextHour.getTime() - now.getTime();
   }
 
   function timeUntilNext8AM() {
-    const now = new Date(); // Current time
-    // Create a Date object for 8:00 AM of the next day
+    const now = new Date();
     const next8AM = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -66,9 +85,9 @@ function trendMapStore() {
       8,
       0,
       0,
-      0
+      0,
     );
-    return next8AM.getTime() - now.getTime(); // Difference in milliseconds
+    return next8AM.getTime() - now.getTime();
   }
 
   function timeUntilNext5DaysAt8AM() {
@@ -80,13 +99,17 @@ function trendMapStore() {
       8,
       0,
       0,
-      0
+      0,
     ); // 8:00 AM in 5 days
     return next5Days.getTime() - now.getTime(); // Difference in milliseconds
   }
 
   return {
     ticker,
+    hotNReadyStore,
+    hotNReady,
+    watchlist,
+    selectedTabMenu,
     store,
     loading,
     errorMessage,
@@ -94,21 +117,21 @@ function trendMapStore() {
     deleteTickerDialog,
     getAllTickers,
     disableGroupNameChange(
-      event: Event & { currentTarget: EventTarget & HTMLInputElement }
+      event: Event & { currentTarget: EventTarget & HTMLInputElement },
     ) {
       event.currentTarget.readOnly = true;
       event.currentTarget.classList.add("outline-none");
       save_layout(new RPCRequest(Version.V1, get(store), generateUID()));
     },
     allowGroupNameChange(
-      event: Event & { currentTarget: EventTarget & HTMLInputElement }
+      event: Event & { currentTarget: EventTarget & HTMLInputElement },
     ) {
       event.currentTarget.readOnly = false;
       event.currentTarget.classList.remove("outline-none");
     },
     validateGroupInput(
       id: number,
-      event: Event & { currentTarget: EventTarget & HTMLInputElement }
+      event: Event & { currentTarget: EventTarget & HTMLInputElement },
     ) {
       const target = event.target! as HTMLInputElement;
       target.value = target.value.replace(/[^a-zA-Z0-9\s]/g, "");
@@ -140,7 +163,7 @@ function trendMapStore() {
         const group = store.get(groupId)!;
         console.log(groupId, store.get(groupId));
         group.tickers = group.tickers.filter(
-          (value) => value.name !== tickerId
+          (value) => value.name !== tickerId,
         );
         store.set(groupId, group);
       }
@@ -151,7 +174,7 @@ function trendMapStore() {
     },
     showDeleteTickerWarning(
       id: number,
-      event: MouseEvent & { currentTarget: EventTarget & HTMLElement }
+      event: MouseEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       event.preventDefault();
       deleteTickerDialog.set(true);
@@ -161,7 +184,22 @@ function trendMapStore() {
     closeDeleteTickerDialog() {
       deleteTickerDialog.set(false);
     },
-    startUpdateTrendMap() {
+    startUpdateReadyTickers() {
+      // Calculate the initial delay until next minute
+      const initial1MinuteDelay = timeUntilNextMinute();
+      setTimeout(() => {
+        // Start the interval to run every 1 minute
+        const id = setInterval(() => {
+          if (get(hotNReadyStore).length) {
+            get_latest_bars(
+              new RPCRequest(Version.V1, get(hotNReadyStore), generateUID()),
+            );
+          }
+        }, 5 * 1000); // 1 minute in milliseconds
+        updateLatestPrices.set(id);
+      }, initial1MinuteDelay);
+    },
+    startUpdateWatchlist() {
       // Calculate the initial delay to the next 4 hour
       const initial4HourDelay = timeUntilNextHour();
       setTimeout(() => {
@@ -169,11 +207,13 @@ function trendMapStore() {
         const id = setInterval(
           () => {
             loading.set(true);
-            send(new RPCRequest(Version.V1, getAllTickers(), generateUID()));
+            generate_layout(
+              new RPCRequest(Version.V1, getAllTickers(), generateUID()),
+            );
           },
-          60 * 60 * 4 * 1000
+          60 * 60 * 4 * 1000,
         ); // 4 hour in milliseconds
-        updateShortTrendMap.set(id);
+        updateShortTerm.set(id);
       }, initial4HourDelay);
 
       // Calculate delay until the next day at 8:00 AM
@@ -183,11 +223,13 @@ function trendMapStore() {
         const id = setInterval(
           () => {
             loading.set(true);
-            send(new RPCRequest(Version.V1, getAllTickers(), generateUID()));
+            generate_layout(
+              new RPCRequest(Version.V1, getAllTickers(), generateUID()),
+            );
           },
-          24 * 60 * 60 * 1000
+          24 * 60 * 60 * 1000,
         ); // 24 hours in milliseconds
-        updateMidTrendMap.set(id);
+        updateMidTerm.set(id);
       }, initialDayDelay);
 
       // Calculate delay until the next 8:00 AM in every 5days/week
@@ -197,23 +239,31 @@ function trendMapStore() {
         const id = setInterval(
           () => {
             loading.set(true);
-            send(new RPCRequest(Version.V1, getAllTickers(), generateUID()));
+            generate_layout(
+              new RPCRequest(Version.V1, getAllTickers(), generateUID()),
+            );
           },
-          5 * 24 * 60 * 60 * 1000
+          5 * 24 * 60 * 60 * 1000,
         ); // 5 days in milliseconds
-        updateLongTrendMap.set(id);
+        updateLongTerm.set(id);
       }, initial5DayDelay);
     },
-    stopUpdateTrendMap() {
-      updateShortTrendMap.update((id) => {
+    stopUpdateWatchlist() {
+      updateShortTerm.update((id) => {
         if (id) clearInterval(id);
         return null;
       });
-      updateMidTrendMap.update((id) => {
+      updateMidTerm.update((id) => {
         if (id) clearInterval(id);
         return null;
       });
-      updateLongTrendMap.update((id) => {
+      updateLongTerm.update((id) => {
+        if (id) clearInterval(id);
+        return null;
+      });
+    },
+    stopUpdateReadyTickers() {
+      updateLatestPrices.update((id) => {
         if (id) clearInterval(id);
         return null;
       });
@@ -226,7 +276,7 @@ function trendMapStore() {
     addTicker() {
       if (get(ticker)) {
         // Create ticker
-        const tickers: Ticker[] = [];
+        const tickers: TrendMapTicker[] = [];
         const id = get(store).length + 1 - 1; // we want to start from 0 index
         tickers.push({
           name: get(ticker),
@@ -243,10 +293,13 @@ function trendMapStore() {
           tickers: [],
         });
         loading.set(true);
-        send(new RPCRequest(Version.V1, tickers, generateUID()));
+        generate_layout(new RPCRequest(Version.V1, tickers, generateUID()));
       }
     },
     closeAddTickerDialog,
+    setTabMenu(ele: HTMLElement) {
+      selectedTabMenu.set(ele);
+    },
     openAddTickerDialog() {
       addTickerDialog.set(true);
     },
@@ -262,7 +315,7 @@ function trendMapStore() {
       }
     },
     handleTickerDragStart(
-      event: DragEvent & { currentTarget: EventTarget & HTMLElement }
+      event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       const ticker = event.currentTarget;
       ticker.classList.add("animate-bounce");
@@ -277,31 +330,31 @@ function trendMapStore() {
           // All section groups will have a internal div to contain the tickers
           // which result in a <section><div> draggable is here </div></section>
           groupId,
-        })
+        }),
       );
       draggingGroupId.set(groupId);
     },
     handleTickerDragEnd(
-      event: DragEvent & { currentTarget: EventTarget & HTMLElement }
+      event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       event.currentTarget.classList.remove("animate-bounce");
       draggingGroupId.set(0);
     },
     handleTickerGroupingDragOver(
-      event: DragEvent & { currentTarget: EventTarget & HTMLElement }
+      event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       event.preventDefault(); // Necessary to allow for drop
       event.dataTransfer!.dropEffect = "move";
     },
     handleTickerGroupingDragEnter(
-      event: DragEvent & { currentTarget: EventTarget & HTMLElement }
+      event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       const newPotentialGroup = event.currentTarget;
       const newPotentialGroupId = Number(newPotentialGroup.id);
 
       // Children ele will disrupt drag n drop
       Array.from(newPotentialGroup.children).forEach((child) =>
-        child.classList.add("pointer-events-none")
+        child.classList.add("pointer-events-none"),
       );
 
       if (
@@ -312,14 +365,14 @@ function trendMapStore() {
       }
     },
     handleTickerGroupingDragLeave(
-      event: DragEvent & { currentTarget: EventTarget & HTMLElement }
+      event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       const newPotentialGroup = event.currentTarget;
       const newPotentialGroupId = Number(newPotentialGroup.id);
 
       // Children ele will disrupt drag n drop
       Array.from(newPotentialGroup.children).forEach((child) =>
-        child.classList.remove("pointer-events-none")
+        child.classList.remove("pointer-events-none"),
       );
 
       // Avoid grouped tickers
@@ -331,12 +384,12 @@ function trendMapStore() {
       }
     },
     handleTickerGroupingDrop(
-      event: DragEvent & { currentTarget: EventTarget & HTMLElement }
+      event: DragEvent & { currentTarget: EventTarget & HTMLElement },
     ) {
       event.preventDefault();
 
       const data: DraggableTicker = JSON.parse(
-        event.dataTransfer!.getData("text")
+        event.dataTransfer!.getData("text"),
       );
       const { groupId, tickerId } = data;
       const newGroupId = Number(event.currentTarget.id);
@@ -345,18 +398,18 @@ function trendMapStore() {
 
       // Children ele will disrupt drag n drop
       Array.from(newGrouping.children).forEach((child) =>
-        child.classList.remove("pointer-events-none")
+        child.classList.remove("pointer-events-none"),
       );
 
       if (groupId !== newGroupId) {
         // Delete old group persistently
         const oldGroup = store.get(groupId)!;
         const ticker = oldGroup.tickers.find(
-          (value) => value.name === tickerId
+          (value) => value.name === tickerId,
         )!;
         ticker.group_id = newGroupId;
         oldGroup.tickers = oldGroup.tickers.filter(
-          (value) => value.name !== tickerId
+          (value) => value.name !== tickerId,
         );
         store.set(groupId, oldGroup);
 
