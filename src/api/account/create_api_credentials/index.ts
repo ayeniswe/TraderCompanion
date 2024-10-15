@@ -19,7 +19,7 @@ function listen_create_api_credential() {
         errorMessage.set(event.payload.error!.message);
       }
       loading.set(false);
-    }
+    },
   );
 }
 

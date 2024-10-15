@@ -14,13 +14,16 @@
   .logo-theme {
     @apply bg-black;
   }
+  .theme {
+    @apply gradient-light;
+  }
   .secondary-theme {
     @apply bg-gray-500;
     @apply text-black;
     @apply border-black;
   }
   .tertiary-theme {
-    @apply bg-gray-600;
+    @apply bg-blue-500;
     @apply text-black;
     @apply border-black;
   }
@@ -35,6 +38,9 @@
     @apply bg-blue-500;
     @apply hover:bg-blue-600;
   }
+  .pinch-gradient {
+    @apply from-gray-500 via-gray-400 to-gray-500;
+  }
 }
 .dark {
   .primary-theme {
@@ -45,15 +51,19 @@
   .logo-theme {
     @apply bg-slate-200;
   }
+  .theme {
+    @apply gradient-dark;
+  }
   .secondary-theme {
     @apply bg-gray-900;
     @apply text-slate-200;
     @apply border-black;
+    @apply from-gray-900 via-gray-800 to-gray-900;
   }
   .tertiary-theme {
-    @apply bg-gray-950;
+    @apply bg-blue-700;
     @apply text-slate-200;
-    @apply border-black;
+    @apply border-slate-200;
   }
   input {
     @apply bg-gray-700;
@@ -65,6 +75,10 @@
     @apply text-slate-200;
     @apply bg-blue-500;
     @apply hover:bg-blue-600;
+    @apply shadow-white;
+  }
+  .pinch-gradient {
+    @apply from-gray-900 via-gray-800 to-gray-900;
   }
 }
 

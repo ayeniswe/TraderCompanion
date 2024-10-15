@@ -1,0 +1,4 @@
+Error Guide
+
+-32001 - incorrect / wrong / invalid
+-32002 - can not be found / empty / does not exist
