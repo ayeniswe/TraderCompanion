@@ -1,10 +1,10 @@
 [package]
 name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.2.0"
+description = "A financial tool to navigate financial markets with condese and user friendly visuals"
+authors = ["Samson O. Ayeni"]
 license = ""
-repository = ""
+repository = "https://github.com/ayeniswe/TraderCompanion"
 default-run = "app"
 edition = "2021"
 rust-version = "1.81"
